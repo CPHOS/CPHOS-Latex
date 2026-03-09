@@ -2,7 +2,26 @@
 %%  Project: CPHOS LaTeX Template
 %%  File: cphos-e.cls
 %%  Copyright © 2026 gameswu & CPHOS (www.cphos.cn)
+%%
+%%  Permission is hereby granted, free of charge, to any person obtaining a 
+%%  copy of this software and associated documentation files (the "Software"), 
+%%  to deal in the Software without restriction, including without limitation 
+%%  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+%%  and/or sell copies of the Software, and to permit persons to whom the 
+%%  Software is furnished to do so, subject to the following conditions:
+%%
+%%  The above copyright notice and this permission notice shall be included 
+%%  in all copies or substantial portions of the Software.
+%%
+%%  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+%%  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+%%  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+%%  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+%%  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+%%  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+%%  DEALINGS IN THE SOFTWARE.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 % 用法: \documentclass[options]{cphos-e}
 %
@@ -159,10 +178,9 @@
 \newcounter{problemnum}
 \newcounter{totalscore}
 
-% 固定三层编号: A. / 1. / A.1.1
+% 固定三层编号: B. / 1. / B.1.1
 \newcounter{expPart}[problemnum]
 \newcounter{expQ}[expPart]
-\newcounter{expSubQ}[expQ]
 
 % === 题号转中文 ===
 \newcommand{\chnnum}[1]{%
@@ -182,12 +200,12 @@
     \fi
     \setcounter{expPart}{0}%
     \setcounter{expQ}{0}%
-    \setcounter{expSubQ}{0}%
     \vspace{1em}%
-    \noindent{\bfseries \chnnum{\value{problemnum}}%
-        \ifx\cphos@problem@score\@empty\else、（#1分）\fi%
-        #2}%
-    \par%
+    \begin{center}
+        \fontsize{12pt}{15pt}\selectfont
+        {\bfseries \Alph{problemnum}.#2%
+            \ifx\cphos@problem@score\@empty\else（#1分）\fi}%
+    \end{center}%
 }{%
     \par%
 }
@@ -213,28 +231,25 @@
 \fi
 
 % === 实验三层编号命令 ===
-% \pmark{文字} -> A. 文字
-% \subq{文字} -> 1. 文字
-% \subsubq{文字} -> A.1.1 文字
-\newcommand{\pmark}[1]{%
+% \pmark[分值]{标题} -> 1.理论分析（10分）
+% \subq              -> B.1.1（仅生成编号，题干作为正文书写）
+\NewDocumentCommand{\pmark}{o m}{%
     \refstepcounter{expPart}%
     \setcounter{expQ}{0}%
-    \setcounter{expSubQ}{0}%
-    \par\noindent\textbf{\Alph{expPart}.}~#1%
+    \par\noindent\textbf{\arabic{expPart}.#2%
+        \IfValueT{#1}{（#1分）}}%
 }
-\newcommand{\subq}[1]{%
+\newcommand{\subq}{%
     \refstepcounter{expQ}%
-    \setcounter{expSubQ}{0}%
-    \par\noindent\textbf{\arabic{expQ}.}~#1%
-}
-\newcommand{\subsubq}[1]{%
-    \refstepcounter{expSubQ}%
-    \par\noindent\textbf{\Alph{expPart}.\arabic{expQ}.\arabic{expSubQ}}~#1%
+    \par\noindent\textbf{\Alph{problemnum}.\arabic{expPart}.\arabic{expQ}}~%
 }
 
-% 强制禁止第四层
+% 强制禁止第三层以下
+\newcommand{\subsubq}[1]{%
+    \PackageError{cphos-e}{Only three levels are allowed: B., 1., B.1.1}{Please remove \string\subsubq.}
+}
 \newcommand{\subsubsubq}[1]{%
-    \PackageError{cphos-e}{Only three levels are allowed: A., 1., A.1.1}{Please remove \string\subsubsubq.}
+    \PackageError{cphos-e}{Only three levels are allowed: B., 1., B.1.1}{Please remove \string\subsubsubq.}
 }
 
 % === 标题页命令 ===

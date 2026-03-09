@@ -8,3 +8,5 @@
 
 # 生成的 PDF 文件
 *.pdf
+
+.DS_Store

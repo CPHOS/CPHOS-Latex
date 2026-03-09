@@ -1,9 +1,29 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  Project: CPHOS LaTeX Template
 %%  File: example-paper.tex
+%%  Copyright © 2026 gameswu & CPHOS (www.cphos.cn)
+%%
+%%  Permission is hereby granted, free of charge, to any person obtaining a 
+%%  copy of this software and associated documentation files (the "Software"), 
+%%  to deal in the Software without restriction, including without limitation 
+%%  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+%%  and/or sell copies of the Software, and to permit persons to whom the 
+%%  Software is furnished to do so, subject to the following conditions:
+%%
+%%  The above copyright notice and this permission notice shall be included 
+%%  in all copies or substantial portions of the Software.
+%%
+%%  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+%%  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+%%  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+%%  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+%%  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+%%  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+%%  DEALINGS IN THE SOFTWARE.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[exam]{../cphos-e}
+
+\documentclass[exam]{cphos-e}
 
 \cphostitle{第XX届 CPHOS 物理竞赛联考}
 \cphossubtitle{实验试题}
@@ -11,12 +31,13 @@
 
 \begin{document}
 
+% === 标题页 ===
 \maketitlepage
 
-{\kaiti\small 本试题于 2026 年 3 月 9 日发布，最后更新于\compiletime 。}
+{\kaiti\small 本文件于YYYY年MM月DD日HH:MM发布，最后更新于\compiletime 。}
 
-{\kaiti\small CPHOS 物理竞赛联考是开放性公益性的考试，有意向参与的教师和学生可以关注“CPHOS”微信公众号报名。}
-
+{\kaiti\small CPHOS物理竞赛联考是开放性公益性的考试，有意向参与的教师和学生可以关注“CPHOS”微信公众号进行报名，报名后方可参与联考。请使用“CPHOS物理竞赛联考”微信小程序完成答题卡上传、阅卷、成绩查询等操作。联系方式见试题末尾。}
+% === 时间安排（仅exam模式显示）===
 \begin{examschedule}
 \begin{tabular}{@{}cc@{}}
     答题卡上传 & 阅卷 \\
@@ -31,16 +52,19 @@
 \end{tabular}
 \end{examschedule}
 
+% === 考生须知（仅exam模式显示）===
 \begin{examnotes}
-    \item 实验试题共 \textbf{\underline{\cphostotalpages}} 页，实验答题卡共 \textbf{\underline{3}} 页，答题时间 \textbf{\underline{60}} 分钟，试题满分 \textbf{\underline{\cphostotalscore}} 分。
-    \item 请在答题卡指定区域作答，草稿纸内容不计分。
-    \item 若发现试题表述问题，请向领队（教练）反馈。
+    \item 实验试题共 \textbf{\underline{\cphostotalpages}} 页，实验答题卡共 \textbf{\underline{X}} 页，答题时间 \textbf{\underline{60}} 分钟，试题满分 \textbf{\underline{\cphostotalscore}} 分。
+    \item 请在答题卡的指定答题区域内答题，试题和草稿纸上的内容将不会作为评分参考，不可申请答题卡加页。
+    \item 若发现试题存在问题，请向领队（教练）反映，由其转达至相关微信群聊。
+    \item 试题答案及相关分析均会在官方网站 \url{www.cphos.cn} 上发布。
+    \item 本次考试定位难度为决赛。
 \end{examnotes}
-
 \vspace{1em}
 
 \begin{problem}[40]{弗兰克-赫兹实验}
 \begin{expcontent}
+
 1913 年玻尔模型指出原子能级是分立的。弗兰克-赫兹实验通过电子与气体原子碰撞电离/激发行为，验证了原子能级量子化。
 
 \begin{figure}[H]
@@ -51,22 +75,34 @@
 \end{figure}
 
 \pmark{观察与定性分析}
-\subq{在固定灯丝加热电压与栅极电压条件下，调节加速电压并记录电流变化特征。}
-\subsubq{说明首次电流峰值出现前后电子与汞原子碰撞行为的变化。}
-\subsubq{讨论异常下降段可能对应的实验误差来源，并给出修正建议。}
+\subq 在固定灯丝加热电压与栅极电压条件下，调节加速电压并记录电流变化特征，说明首次电流峰值出现前后电子与汞原子碰撞行为的变化。
+\subq 讨论异常下降段可能对应的实验误差来源，并给出修正建议。
 
-\pmark{数据处理与参数估计}
-\subq{根据实验表格中相邻峰值间隔，估算第一激发能对应电势差。}
-\subsubq{结合误差传播，给出测量结果的不确定度表达。}
-\subsubq{比较实验值与参考值，说明是否在误差范围内一致。}
+\pmark[15]{数据处理与参数估计}
+\subq 根据实验表格中相邻峰值间隔，估算第一激发能对应电势差。
+\subq 结合误差传播，给出测量结果的不确定度表达。
+\subq 比较实验值与参考值，说明是否在误差范围内一致。
 \end{expcontent}
 \end{problem}
 
+% ============================================
+% 版权信息（使用copyrightinfo环境确保不分页）
+% ============================================
 \begin{copyrightinfo}
 \begin{center}
-\small
-Copyright \copyright\ \the\year\ CPHOS. All Rights Reserved.
+    {\textbf{版权信息}}
 \end{center}
+
+\noindent{\textbf{命题人}}
+
+X~X\quad XXX\quad XXX
+
+\noindent{\textbf{审题人}}
+
+Y~Y\quad YYY\quad YYY
+
+\vspace{0.5em}
+\contactinfo{../assets/fig1.jpg}{../assets/fig2.png}{../assets/fig3.png}{\url{service@cphos.cn}}{CPHOS物理竞赛联考}
 \end{copyrightinfo}
 
 \end{document}
