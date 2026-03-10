@@ -317,7 +317,7 @@
 
     % \spt{分值} 或 \spt[内容]{分值} - 得分点标记
     \NewDocumentCommand{\spt}{o m}{%
-        \IfValueT{#1}{\textbf{#1}}%
+        \IfValueT{#1}{\colorbox{black!15}{\textbf{#1}}}%
         \cphosExpRecordSpt{#2}%
     }
 
@@ -351,7 +351,7 @@
         \fi
         &
         \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
-        \IfValueT{#1}{\newline \textbf{#1pt}}%
+        \IfValueT{#1}{\newline\vspace{0.2em}\colorbox{black!15}{\textbf{#1pt}}}%
         &
         #2 \\
         \hhline{|~|-|-|}%
@@ -367,7 +367,7 @@
         }%
         &
         \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
-        \IfValueT{#1}{\newline \textbf{#1pt}}%
+        \IfValueT{#1}{\newline\vspace{0.2em}\colorbox{black!15}{\textbf{#1pt}}}%
         &
         #2 \\
         \hline%
@@ -519,9 +519,8 @@
 
 % === 标题页命令 ===
 \newcommand{\maketitlepage}{%
-    \ifcphos@answersheet
-        % answersheet模式：不显示标题页
-    \else
+    \ifcphos@exam
+        % exam模式：显示标题页
         \thispagestyle{firstpage}%
         \begin{center}
             {\fontsize{16pt}{24pt}\selectfont\bfseries \cphos@title} \\[0.3em]
