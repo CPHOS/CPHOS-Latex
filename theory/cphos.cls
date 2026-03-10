@@ -73,7 +73,7 @@
 % === 字体设置 ===
 \setmainfont{Times New Roman}
 \setCJKmainfont[BoldFont=SimHei]{SimSun}  % 中文宋体，粗体用黑体
-\setCJKfamilyfont{kai}{KaiTi}             % 楷体
+\setCJKfamilyfont{kai}[AutoFakeBold=2]{KaiTi}
 \newcommand{\kaiti}{\CJKfamily{kai}}
 
 % === 页面设置 ===

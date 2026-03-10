@@ -84,6 +84,9 @@
 \RequirePackage{xparse}
 \RequirePackage{float}
 \RequirePackage{caption}
+\captionsetup[table]{position=above, font=bf, labelfont=bf}  % 表格标题在上方，全粗体
+\RequirePackage{array}
+\RequirePackage{ltablex}  % 结合 longtable + tabularx：跨页 + 自动列宽
 \RequirePackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=cyan]{hyperref}
 \RequirePackage{upgreek}
 \RequirePackage{bm}
@@ -92,19 +95,43 @@
 % === 字体设置 ===
 \setmainfont{Times New Roman}
 \setCJKmainfont[BoldFont=SimHei]{SimSun}
-\setCJKfamilyfont{kai}{KaiTi}
+\setCJKfamilyfont{kai}[AutoFakeBold=2]{KaiTi}
 \newcommand{\kaiti}{\CJKfamily{kai}}
 
 % === 页面设置 ===
-\geometry{
-    left=3.17cm,
-    right=3.17cm,
-    top=2.34cm,
-    bottom=2.54cm,
-    headheight=1.5cm,
-    headsep=0.5cm,
-    footskip=1cm
-}
+\ifcphos@answer
+    % answer模式：三栏布局需要更宽的版面（1.53+1.4+16.05=18.98cm）
+    \geometry{
+        left=1cm,
+        right=1cm,
+        top=2.34cm,
+        bottom=2.54cm,
+        headheight=1.5cm,
+        headsep=0.5cm,
+        footskip=1cm
+    }
+\else\ifcphos@answersheet
+    % answersheet模式：与answer模式一致的页边距
+    \geometry{
+        left=1cm,
+        right=1cm,
+        top=2.34cm,
+        bottom=2.54cm,
+        headheight=1.5cm,
+        headsep=0.5cm,
+        footskip=1cm
+    }
+\else
+    \geometry{
+        left=3.17cm,
+        right=3.17cm,
+        top=2.34cm,
+        bottom=2.54cm,
+        headheight=1.5cm,
+        headsep=0.5cm,
+        footskip=1cm
+    }
+\fi\fi
 \linespread{1.0}
 
 % === 段落缩进 ===
@@ -142,9 +169,16 @@
 \fancyhf{}
 \fancyhead[L]{\kaiti\small \cphos@title}
 \fancyhead[R]{\kaiti\small \cphos@subtitle}
+\ifcphos@answersheet
+    \fancyhead[C]{\kaiti\small 姓名：}
+    \renewcommand{\headrulewidth}{0pt}
+\else\ifcphos@answer
+    \renewcommand{\headrulewidth}{0pt}  % answer模式无页眉分割线
+\else
+    \renewcommand{\headrulewidth}{0.4pt}
+\fi\fi
 \fancyfoot[L]{\thepage\ / \pageref{LastPage}}
 \fancyfoot[R]{\copyright\ \the\year\ CPHOS}
-\renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 
 \fancypagestyle{firstpage}{%
@@ -200,35 +234,259 @@
     \fi
     \setcounter{expPart}{0}%
     \setcounter{expQ}{0}%
-    \vspace{1em}%
-    \begin{center}
-        \fontsize{12pt}{15pt}\selectfont
-        {\bfseries \Alph{problemnum}.#2%
-            \ifx\cphos@problem@score\@empty\else（#1分）\fi}%
-    \end{center}%
+    \ifcphos@answer
+        % answer模式：设置分值检查的题目总分
+        \ifx\cphos@problem@score\@empty\else
+            \cphosExpSetProblemScore{#1}%
+        \fi
+        % answer模式：显示数值评分标准（仅首题），然后显示题目标题
+        \ifnum\value{problemnum}=1
+            \scoringrule
+        \fi
+        \vspace{0.5em}%
+    \else\ifcphos@answersheet
+        % answersheet模式：设置分值检查但不显示评分标准
+        \ifx\cphos@problem@score\@empty\else
+            \cphosExpSetProblemScore{#1}%
+        \fi
+        \vspace{0.5em}%
+    \else
+        % exam模式：正常显示题目
+        \vspace{1em}%
+        \begin{center}
+            \fontsize{12pt}{15pt}\selectfont
+            {\bfseries \Alph{problemnum}.#2%
+                \ifx\cphos@problem@score\@empty\else（#1分）\fi}%
+        \end{center}%
+    \fi\fi
 }{%
     \par%
 }
 
 % === 实验正文环境（替代理论版problemstatement） ===
-\newenvironment{expcontent}{%
-    \setlength{\parindent}{2em}%
-}{%
-    \par\vspace{\baselineskip}%
-}
-
-% === 实验答案环境（answer模式显示，exam模式隐藏） ===
-\ifcphos@answer
-    \newenvironment{expanswer}{%
-        \noindent{\bfseries 实验解答与评分说明：}%
-        \par%
-        \setlength{\parindent}{0pt}%
+% answer/answersheet模式下隐藏题干，exam模式下显示
+\ifcphos@exam
+    \newenvironment{expcontent}{%
+        \setcounter{figure}{0}%  % 每个 expcontent 内图表从 1 开始计数
+        \setcounter{table}{0}%
+        \setlength{\parindent}{2em}%
     }{%
-        \par%
+        \par\vspace{\baselineskip}%
     }
 \else
-    \excludecomment{expanswer}
+    \excludecomment{expcontent}
 \fi
+
+% === 实验答案/答题卡环境三栏布局（answer/answersheet模式显示，exam模式隐藏） ===
+% 三栏宽度（含边框）: 第一栏1.53cm, 第二栏1.4cm, 第三栏16.05cm，总宽18.98cm
+\newlength{\cphos@colA}
+\newlength{\cphos@colB}
+\newlength{\cphos@colC}
+\setlength{\cphos@colA}{1.53cm}
+\setlength{\cphos@colB}{1.4cm}
+\setlength{\cphos@colC}{16.05cm}
+
+% 解答计数器
+\newcounter{ansPartNum}[problemnum]    % 大题内的部分编号（对应pmark）
+\newcounter{ansSubQNum}[ansPartNum]    % 小题编号（对应subq）
+
+% 存储当前大题和部分的信息
+\def\cphos@currentProblem{\Alph{problemnum}}
+\def\cphos@currentPart{0}
+\def\cphos@currentPartScore{}
+\newif\ifcphos@firstSubQ
+
+\ifcphos@answer
+    % === answer 模式 ===
+    \RequirePackage{longtable}
+    \RequirePackage{multirow}
+    \RequirePackage{hhline}
+
+    % 数值评分标准说明
+    \newcommand{\scoringrule}{%
+        \noindent\textbf{*数值评分遵循以下标准：}%
+        \par\vspace{0.5em}%
+        \hspace{2em}$Y = y_0$，\quad Num $= A - B - X$；$\Delta = 0 - \alpha - \beta$%
+        \par\vspace{0.3em}%
+        \noindent 若考生给出$y$的有效位数为$A$，数值为$|y - y_0| \le \alpha$，不扣分；有效位数为$B$，或%
+        $|y - y_0| \in (\alpha, \beta]$，或物理量少单位，扣除50\%分数；有效位数为$A, B$以外的值，或$|y - y_0| > \beta$，%
+        扣除100\%分数。该扣分得分扣完为止。计算过程中有效数字可以多（少）保留一位。没有给出Num的，表示与答案不同的有效位数扣除100\%分数；%
+        没有给出$\Delta$的，允许在末位出现1的偏差，否则扣除100\%分数。%
+        \par\vspace{1em}%
+    }
+
+    % \spt{分值} 或 \spt[内容]{分值} - 得分点标记
+    \NewDocumentCommand{\spt}{o m}{%
+        \IfValueT{#1}{\textbf{#1}}%
+        \cphosExpRecordSpt{#2}%
+    }
+
+    % \anspart[分数] - 开始新的大题部分
+    \NewDocumentCommand{\anspart}{o}{%
+        \refstepcounter{ansPartNum}%
+        \setcounter{ansSubQNum}{0}%
+        \xdef\cphos@currentPart{\arabic{ansPartNum}}%
+        \IfValueTF{#1}{%
+            \gdef\cphos@currentPartScore{#1}%
+            \cphosExpBeginAnspart{\Alph{problemnum}.\cphos@currentPart}{#1}%
+        }{%
+            \gdef\cphos@currentPartScore{}%
+            \cphosExpBeginAnspart{\Alph{problemnum}.\cphos@currentPart}{}%
+        }%
+        \global\cphos@firstSubQtrue
+    }
+
+    % \ansq[分数]{解答内容}{答题卡内容} - answer模式显示第2参数
+    \NewDocumentCommand{\ansq}{o +m +g}{%
+        \refstepcounter{ansSubQNum}%
+        \IfValueTF{#1}{%
+            \cphosExpBeginAnsq{\Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}}{#1}%
+        }{%
+            \cphosExpBeginAnsq{\Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}}{}%
+        }%
+        \ifcphos@firstSubQ
+            \Alph{problemnum}.\cphos@currentPart%
+            \ifx\cphos@currentPartScore\@empty\else\newline\textbf{\cphos@currentPartScore pt}\fi%
+            \global\cphos@firstSubQfalse
+        \fi
+        &
+        \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
+        \IfValueT{#1}{\newline \textbf{#1pt}}%
+        &
+        #2 \\
+        \hhline{|~|-|-|}%
+    }
+
+    % \anslastq[分数]{解答内容}{答题卡内容} - answer模式显示第2参数
+    \NewDocumentCommand{\anslastq}{o +m +g}{%
+        \refstepcounter{ansSubQNum}%
+        \IfValueTF{#1}{%
+            \cphosExpBeginAnsq{\Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}}{#1}%
+        }{%
+            \cphosExpBeginAnsq{\Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}}{}%
+        }%
+        &
+        \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
+        \IfValueT{#1}{\newline \textbf{#1pt}}%
+        &
+        #2 \\
+        \hline%
+    }
+
+    % expanswer环境
+    \newenvironment{expanswer}{%
+        \setcounter{ansPartNum}{0}%
+        \setcounter{ansSubQNum}{0}%
+        \xdef\cphos@currentProblem{\Alph{problemnum}}%
+        \cphosExpClearState%
+        \par\vspace{0.3em}%
+        \kaiti%
+        \setlength{\LTleft}{0pt}%
+        \setlength{\LTright}{0pt}%
+        \setlength{\tabcolsep}{0pt}%
+        \renewcommand{\arraystretch}{1.5}%
+        \begin{longtable}{@{}|>{\centering\arraybackslash}m{\cphos@colA}|>{\centering\arraybackslash}m{\cphos@colB}|m{\cphos@colC}|@{}}
+        \hline
+        \endfirsthead
+        \hline
+        \endhead
+        \hline
+        \endfoot
+        \endlastfoot
+    }{%
+        \end{longtable}%
+        \cphosExpCheckAndOutput%
+        \par%
+    }
+
+\else\ifcphos@answersheet
+    % === answersheet 模式 ===
+    \RequirePackage{longtable}
+    \RequirePackage{multirow}
+    \RequirePackage{hhline}
+
+    % answersheet模式不显示评分标准
+    \newcommand{\scoringrule}{}
+
+    % \ansblank{n} - 生成n行空白区域供答题
+    \newcommand{\ansblank}[1]{%
+        \vspace{#1\baselineskip}%
+    }
+
+    % \spt 在 answersheet 模式下不输出任何内容
+    \NewDocumentCommand{\spt}{o m}{}
+
+    % \anspart[分数] - answersheet模式显示分数（与answer一致）
+    \NewDocumentCommand{\anspart}{o}{%
+        \refstepcounter{ansPartNum}%
+        \setcounter{ansSubQNum}{0}%
+        \xdef\cphos@currentPart{\arabic{ansPartNum}}%
+        \IfValueTF{#1}{%
+            \gdef\cphos@currentPartScore{#1}%
+        }{%
+            \gdef\cphos@currentPartScore{}%
+        }%
+        \global\cphos@firstSubQtrue
+    }
+
+    % \ansq[分数]{解答内容}{答题卡内容} - answersheet模式显示第3参数，但分数布局与answer一致
+    \NewDocumentCommand{\ansq}{o +m +g}{%
+        \refstepcounter{ansSubQNum}%
+        \ifcphos@firstSubQ
+            \Alph{problemnum}.\cphos@currentPart%
+            \ifx\cphos@currentPartScore\@empty\else\newline\textbf{\cphos@currentPartScore pt}\fi%
+            \global\cphos@firstSubQfalse
+        \fi
+        &
+        \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
+        \IfValueT{#1}{\newline \textbf{#1pt}}%
+        &
+        \IfValueTF{#3}{#3}{} \\
+        \hhline{|~|-|-|}%
+    }
+
+    % \anslastq[分数]{解答内容}{答题卡内容} - answersheet模式显示第3参数，但分数布局与answer一致
+    \NewDocumentCommand{\anslastq}{o +m +g}{%
+        \refstepcounter{ansSubQNum}%
+        &
+        \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
+        \IfValueT{#1}{\newline \textbf{#1pt}}%
+        &
+        \IfValueTF{#3}{#3}{} \\
+        \hline%
+    }
+
+    % expanswer环境 - answersheet版本
+    \newenvironment{expanswer}{%
+        \setcounter{ansPartNum}{0}%
+        \setcounter{ansSubQNum}{0}%
+        \xdef\cphos@currentProblem{\Alph{problemnum}}%
+        \par\vspace{0.3em}%
+        \kaiti%
+        \setlength{\LTleft}{0pt}%
+        \setlength{\LTright}{0pt}%
+        \setlength{\tabcolsep}{0pt}%
+        \renewcommand{\arraystretch}{1.5}%
+        \begin{longtable}{@{}|>{\centering\arraybackslash}m{\cphos@colA}|>{\centering\arraybackslash}m{\cphos@colB}|m{\cphos@colC}|@{}}
+        \hline
+        \endfirsthead
+        \hline
+        \endhead
+        \hline
+        \endfoot
+        \endlastfoot
+    }{%
+        \end{longtable}%
+        \par%
+    }
+
+\else
+    % === exam 模式 ===
+    \excludecomment{expanswer}
+    \newcommand{\anspart}[1][]{}
+    \NewDocumentCommand{\ansq}{o +m +g}{}
+    \NewDocumentCommand{\anslastq}{o +m +g}{}
+\fi\fi
 
 % === 实验三层编号命令 ===
 % \pmark[分值]{标题} -> 1.理论分析（10分）
@@ -252,13 +510,24 @@
     \PackageError{cphos-e}{Only three levels are allowed: B., 1., B.1.1}{Please remove \string\subsubsubq.}
 }
 
+% === 表格支持说明 ===
+% 短表格（固定位置）：\begin{table}[H] \begin{tabular}...\end{tabular} \end{table}
+% 跨页+自动列宽：\begin{tabularx}{\textwidth}{|c|X|X|...} ... \end{tabularx}
+%   - X 列类型自动分配剩余宽度，总宽度 = \textwidth
+%   - 由 ltablex 宏包提供，支持跨页
+% 已加载宏包：float（H位置符）、ltablex（跨页+自动列宽）、array（列格式）
+
 % === 标题页命令 ===
 \newcommand{\maketitlepage}{%
-    \thispagestyle{firstpage}%
-    \begin{center}
-        {\fontsize{16pt}{24pt}\selectfont\bfseries \cphos@title} \\[0.3em]
-        {\fontsize{14pt}{21pt}\selectfont\bfseries \cphos@subtitle}
-    \end{center}
+    \ifcphos@answersheet
+        % answersheet模式：不显示标题页
+    \else
+        \thispagestyle{firstpage}%
+        \begin{center}
+            {\fontsize{16pt}{24pt}\selectfont\bfseries \cphos@title} \\[0.3em]
+            {\fontsize{14pt}{21pt}\selectfont\bfseries \cphos@subtitle}
+        \end{center}
+    \fi
 }
 
 % === 时间安排环境（仅exam模式显示） ===
@@ -271,8 +540,11 @@
         \end{center}
         \par%
     }
+    % 仅exam模式显示的通用环境
+    \newenvironment{examonly}{}{}
 \else
     \excludecomment{examschedule}
+    \excludecomment{examonly}
 \fi
 
 % === 考生须知辅助命令（仅exam模式累加有效） ===
@@ -307,36 +579,215 @@
     \excludecomment{examnotes}
 \fi
 
-% === 版权信息环境（不分页） ===
-\newenvironment{copyrightinfo}{%
-    \par\vspace{2em}%
-    \noindent\begin{minipage}{\textwidth}%
-}{%
-    \end{minipage}%
-    \par%
+% === 版权信息环境（仅exam模式显示，不分页） ===
+\ifcphos@exam
+    \newenvironment{copyrightinfo}{%
+        \par\vspace{2em}%
+        \noindent\begin{minipage}{\textwidth}%
+    }{%
+        \end{minipage}%
+        \par%
+    }
+\else
+    \excludecomment{copyrightinfo}
+\fi
+
+% === 联系方式（仅exam模式显示） ===
+\ifcphos@exam
+    \newcommand{\contactinfo}[5]{%
+        \begin{center}
+            {\bfseries 联系方式}
+        \end{center}
+        \vspace{0.5em}
+        \noindent
+        \begin{tabular}{@{}c@{\quad}c@{\quad}c@{\quad}p{4cm}@{}}
+            \includegraphics[width=2.8cm, align=c]{#1} &
+            \includegraphics[width=2.8cm, align=c]{#2} &
+            \includegraphics[width=2.8cm, align=c]{#3} &
+            \begin{tabular}[c]{@{}c@{}}
+                {\small 邮箱} \\
+                {\small #4} \\
+                {\small 微信小程序} \\
+                {\small #5}
+            \end{tabular} \\[-0.5em]
+
+            {\small 微信公众号} & {\small 官方网站} & {\small CPHOS论坛} & \\
+            {\small CPHOS} & {\small \url{www.cphos.cn}} & & \\
+        \end{tabular}
+    }
+\else
+    \newcommand{\contactinfo}[5]{}
+\fi
+
+% =========================================================================
+% === 分值检查机制（answer模式专用）===
+% =========================================================================
+\ExplSyntaxOn
+
+% --- 全局开关 ---
+\bool_new:N \g__cphos_exp_check_score_bool
+\bool_gset_false:N \g__cphos_exp_check_score_bool
+
+% \setscorecheck{true/false} - 开启或关闭分值检查
+\NewDocumentCommand{\setscorecheck}{m}{
+    \str_if_eq:nnTF {#1} {true} {
+        \bool_gset_true:N \g__cphos_exp_check_score_bool
+    }{
+        \bool_gset_false:N \g__cphos_exp_check_score_bool
+    }
 }
 
-% === 联系方式 ===
-\newcommand{\contactinfo}[5]{%
-    \begin{center}
-        {\bfseries 联系方式}
-    \end{center}
-    \vspace{0.5em}
-    \noindent
-    \begin{tabular}{@{}c@{\quad}c@{\quad}c@{\quad}p{4cm}@{}}
-        \includegraphics[width=2.8cm, align=c]{#1} &
-        \includegraphics[width=2.8cm, align=c]{#2} &
-        \includegraphics[width=2.8cm, align=c]{#3} &
-        \begin{tabular}[c]{@{}c@{}}
-            {\small 邮箱} \\
-            {\small #4} \\
-            {\small 微信小程序} \\
-            {\small #5}
-        \end{tabular} \\[-0.5em]
-
-        {\small 微信公众号} & {\small 官方网站} & {\small CPHOS论坛} & \\
-        {\small CPHOS} & {\small \url{www.cphos.cn}} & & \\
-    \end{tabular}
+% --- 题目总分 ---
+\tl_new:N \g__cphos_exp_problem_score_tl
+\cs_new:Npn \cphosExpSetProblemScore #1 {
+    \tl_gset:Nn \g__cphos_exp_problem_score_tl {#1}
 }
+
+% --- 警告序列 ---
+\seq_new:N \g__cphos_exp_warnings_seq
+
+% --- 分值追踪（使用浮点数）---
+\fp_new:N \g__cphos_exp_spt_actual_fp       % 当前 ansq 的 spt 累计
+\fp_new:N \g__cphos_exp_ansq_actual_fp      % 当前 anspart 的 ansq 累计
+\fp_new:N \g__cphos_exp_anspart_actual_fp   % 整个 problem 的 anspart 累计
+
+% --- 当前层级信息 ---
+\tl_new:N \g__cphos_exp_current_part_label_tl   % 当前 anspart 标签（如 A.1）
+\tl_new:N \g__cphos_exp_anspart_declared_tl     % 当前 anspart 声明分值
+\tl_new:N \g__cphos_exp_current_q_label_tl      % 当前 ansq 标签（如 A.1.3）
+\tl_new:N \g__cphos_exp_ansq_declared_tl        % 当前 ansq 声明分值
+\bool_new:N \g__cphos_exp_has_spt_bool          % 当前 ansq 是否有 spt
+
+% --- 清除状态 ---
+\cs_new:Npn \__cphos_exp_clear_state: {
+    \fp_gzero:N \g__cphos_exp_spt_actual_fp
+    \fp_gzero:N \g__cphos_exp_ansq_actual_fp
+    \fp_gzero:N \g__cphos_exp_anspart_actual_fp
+    \tl_gclear:N \g__cphos_exp_anspart_declared_tl
+    \tl_gclear:N \g__cphos_exp_ansq_declared_tl
+    \tl_gclear:N \g__cphos_exp_current_part_label_tl
+    \tl_gclear:N \g__cphos_exp_current_q_label_tl
+    \seq_gclear:N \g__cphos_exp_warnings_seq
+    \bool_gset_false:N \g__cphos_exp_has_spt_bool
+}
+
+% --- 检查当前 ansq 的 spt 总和（立即检查，不延迟）---
+\cs_new:Npn \__cphos_exp_check_current_ansq: {
+    \bool_if:NT \g__cphos_exp_check_score_bool {
+        \tl_if_empty:NF \g__cphos_exp_ansq_declared_tl {
+            \bool_if:NT \g__cphos_exp_has_spt_bool {
+                \fp_compare:nNnF { \g__cphos_exp_spt_actual_fp } = { \g__cphos_exp_ansq_declared_tl } {
+                    \seq_gput_right:Nx \g__cphos_exp_warnings_seq {
+                        小题~\g__cphos_exp_current_q_label_tl ：声明~\g__cphos_exp_ansq_declared_tl~分，spt合计~\fp_use:N \g__cphos_exp_spt_actual_fp~分
+                    }
+                }
+            }
+        }
+    }
+    % 将当前 ansq 的声明分值累加到 anspart
+    \tl_if_empty:NF \g__cphos_exp_ansq_declared_tl {
+        \fp_gadd:Nn \g__cphos_exp_ansq_actual_fp { \g__cphos_exp_ansq_declared_tl }
+    }
+}
+
+% --- 检查当前 anspart 的 ansq 总和 ---
+\cs_new:Npn \__cphos_exp_check_current_anspart: {
+    \bool_if:NT \g__cphos_exp_check_score_bool {
+        \tl_if_empty:NF \g__cphos_exp_anspart_declared_tl {
+            \fp_compare:nNnF { \g__cphos_exp_ansq_actual_fp } = { \g__cphos_exp_anspart_declared_tl } {
+                \seq_gput_right:Nx \g__cphos_exp_warnings_seq {
+                    大题~\g__cphos_exp_current_part_label_tl ：声明~\g__cphos_exp_anspart_declared_tl~分，ansq合计~\fp_use:N \g__cphos_exp_ansq_actual_fp~分
+                }
+            }
+        }
+    }
+    % 将当前 anspart 的声明分值累加到 problem
+    \tl_if_empty:NF \g__cphos_exp_anspart_declared_tl {
+        \fp_gadd:Nn \g__cphos_exp_anspart_actual_fp { \g__cphos_exp_anspart_declared_tl }
+    }
+}
+
+% --- 在 expanswer 结束时检查所有剩余项 ---
+\cs_new:Npn \__cphos_exp_check_all: {
+    % 检查最后一个 ansq
+    \tl_if_empty:NF \g__cphos_exp_current_q_label_tl {
+        \__cphos_exp_check_current_ansq:
+    }
+    % 检查最后一个 anspart
+    \tl_if_empty:NF \g__cphos_exp_current_part_label_tl {
+        \__cphos_exp_check_current_anspart:
+    }
+    % 检查 problem 总分
+    \bool_if:NT \g__cphos_exp_check_score_bool {
+        \tl_if_empty:NF \g__cphos_exp_problem_score_tl {
+            \fp_compare:nNnF { \g__cphos_exp_anspart_actual_fp } = { \g__cphos_exp_problem_score_tl } {
+                \seq_gput_right:Nx \g__cphos_exp_warnings_seq {
+                    题目总分：声明~\g__cphos_exp_problem_score_tl~分，anspart合计~\fp_use:N \g__cphos_exp_anspart_actual_fp~分
+                }
+            }
+        }
+    }
+}
+
+% --- 输出警告 ---
+\cs_new:Npn \__cphos_exp_output_warnings: {
+    \seq_if_empty:NF \g__cphos_exp_warnings_seq {
+        \par\noindent\textcolor{red}{\bfseries 【分值检查警告】}
+        \seq_map_inline:Nn \g__cphos_exp_warnings_seq {
+            \par\noindent\textcolor{red}{##1}
+        }
+        \par
+    }
+}
+
+% --- 记录 spt 分值 ---
+\cs_new:Npn \__cphos_exp_record_spt:n #1 {
+    \fp_gadd:Nn \g__cphos_exp_spt_actual_fp {#1}
+    \bool_gset_true:N \g__cphos_exp_has_spt_bool
+}
+
+% --- 开始新的 ansq（关键：标签用 x 展开存储）---
+\cs_new:Npn \__cphos_exp_begin_ansq:nn #1 #2 {
+    % 1. 先检查上一个 ansq（如果存在）
+    \tl_if_empty:NF \g__cphos_exp_current_q_label_tl {
+        \__cphos_exp_check_current_ansq:
+    }
+    % 2. 设置新的 ansq 信息（用 x 展开确保标签是当前值）
+    \tl_gset:Nx \g__cphos_exp_current_q_label_tl {#1}
+    \tl_gset:Nn \g__cphos_exp_ansq_declared_tl {#2}
+    \fp_gzero:N \g__cphos_exp_spt_actual_fp
+    \bool_gset_false:N \g__cphos_exp_has_spt_bool
+}
+
+% --- 开始新的 anspart ---
+\cs_new:Npn \__cphos_exp_begin_anspart:nn #1 #2 {
+    % 1. 先检查上一个 ansq（如果存在）
+    \tl_if_empty:NF \g__cphos_exp_current_q_label_tl {
+        \__cphos_exp_check_current_ansq:
+    }
+    % 2. 再检查上一个 anspart（如果存在）
+    \tl_if_empty:NF \g__cphos_exp_current_part_label_tl {
+        \__cphos_exp_check_current_anspart:
+    }
+    % 3. 设置新的 anspart 信息（用 x 展开确保标签是当前值）
+    \tl_gset:Nx \g__cphos_exp_current_part_label_tl {#1}
+    \tl_gset:Nn \g__cphos_exp_anspart_declared_tl {#2}
+    \fp_gzero:N \g__cphos_exp_ansq_actual_fp
+    \tl_gclear:N \g__cphos_exp_current_q_label_tl
+    \fp_gzero:N \g__cphos_exp_spt_actual_fp
+    \bool_gset_false:N \g__cphos_exp_has_spt_bool
+}
+
+% --- 公开接口 ---
+\cs_new:Npn \cphosExpClearState { \__cphos_exp_clear_state: }
+\cs_new:Npn \cphosExpRecordSpt #1 { \__cphos_exp_record_spt:n {#1} }
+\cs_new:Npn \cphosExpBeginAnsq #1 #2 { \__cphos_exp_begin_ansq:nn {#1}{#2} }
+\cs_new:Npn \cphosExpBeginAnspart #1 #2 { \__cphos_exp_begin_anspart:nn {#1}{#2} }
+\cs_new:Npn \cphosExpCheckAndOutput { 
+    \__cphos_exp_check_all:
+    \__cphos_exp_output_warnings:
+}
+
+\ExplSyntaxOff
 
 \endinput
