@@ -1,0 +1,93 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Project: CPHOS LaTeX Template
+%%  File: example-feedback.tex
+%%  Copyright © 2026 gameswu & CPHOS (www.cphos.cn)
+%%
+%%  Permission is hereby granted, free of charge, to any person obtaining a 
+%%  copy of this software and associated documentation files (the "Software"), 
+%%  to deal in the Software without restriction, including without limitation 
+%%  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+%%  and/or sell copies of the Software, and to permit persons to whom the 
+%%  Software is furnished to do so, subject to the following conditions:
+%%
+%%  The above copyright notice and this permission notice shall be included 
+%%  in all copies or substantial portions of the Software.
+%%
+%%  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+%%  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+%%  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+%%  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+%%  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+%%  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+%%  DEALINGS IN THE SOFTWARE.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% CPHOS 理论试题评析及作答情况点评模板
+
+\documentclass{cphos}
+
+\cphostitle{第XX届 CPHOS 物理竞赛联考}
+\cphossubtitle{理论试题评析及作答情况点评}
+\cphoswatermark{../assets/watermark.jpg}
+
+% ============================================================
+% 评析环境定义
+% ============================================================
+
+% 题目计数器
+\newcounter{fbnum}
+
+% \fbproblem  —— 输出"第 N 题"居中大标题，自动递增计数（题间有间隔，标题与正文无间隔）
+\newcommand{\fbproblem}{%
+    \refstepcounter{fbnum}%
+    \ifnum\value{fbnum}>1\vspace{1em}\fi%  % 仅第二题起在前方加间隔
+    \begin{center}
+        {\fontsize{12pt}{12pt}\selectfont\bfseries 第\ \arabic{fbnum}\ 题}%
+    \end{center}%
+    \vspace{-\parskip}\vspace{-\baselineskip}%  % 消除 center 环境后的间距
+}
+
+% \fbsection{标题}  —— 输出居中粗体小节标题（如"试题评析"、"作答情况点评"）
+\newcommand{\fbsection}[1]{%
+    \begin{center}
+        {\bfseries #1}%
+    \end{center}%
+    \vspace{-\parskip}\vspace{-\baselineskip}%  % 消除 center 环境后的间距
+}
+
+% ============================================================
+
+\begin{document}
+
+% === 标题页（副标题后无任何其他内容）===
+\maketitlepage
+
+% ============================================================
+% 第 1 题
+% ============================================================
+\fbproblem
+
+\fbsection{试题评析}
+
+本题灵感来源于出题人做的一道高数习题，为了给这道题一个物理背景，出题人结合热点事件，出了第（1）问和（2.1）问，并把高数习题放在了第（2.2）问。前面两问可以说是为了平衡试卷难度而故意出简单的，需要选手能一眼看出其难易度并秒杀掉，如果前两问没做对说明基本功不扎实。第（2.2）问就需要一点灵感和运气，需要选手当机立断，有灵感就秒杀，没有灵感就不要死磕。总的来说，本题考察选手的基本功和考试技巧，总体难度小，想拿满分有困难。
+
+\fbsection{作答情况点评}
+
+本题整体较简单，作答情况相对较好。
+
+本题（1）问较基础，纯几何问题，正确理解题意不难做出，得分率较高；（2.1）问仍是基本的振动问题，需注意分类讨论，最终答案可能有多种等价形式，尽管造成阅卷时较多的误判，但所幸大多予以纠正，本问考察振动的基本功，基础不扎实的同学本问失分较多，基础扎实的同学基本可以拿满分；（2.2）问需要考生灵活应变，以及带有运气成分的些许灵感，跳出传统力学运动学思维，而从数学上考虑问题，本问得分率较低，但类似本问的问题在真正考试中基本不会出现，因此感到有困难也不必担心，本问只是拓展一下大家的思路而已。
+
+% ============================================================
+% 第 2 题
+% ============================================================
+\fbproblem
+
+\fbsection{试题评析}
+
+（此处填写第2题试题评析内容。）
+
+\fbsection{作答情况点评}
+
+（此处填写第2题作答情况点评内容。）
+
+\end{document}

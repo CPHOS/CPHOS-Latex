@@ -1,0 +1,78 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Project: CPHOS LaTeX Template
+%%  File: example-guide.tex
+%%  Copyright © 2026 gameswu & CPHOS (www.cphos.cn)
+%%
+%%  Permission is hereby granted, free of charge, to any person obtaining a 
+%%  copy of this software and associated documentation files (the "Software"), 
+%%  to deal in the Software without restriction, including without limitation 
+%%  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+%%  and/or sell copies of the Software, and to permit persons to whom the 
+%%  Software is furnished to do so, subject to the following conditions:
+%%
+%%  The above copyright notice and this permission notice shall be included 
+%%  in all copies or substantial portions of the Software.
+%%
+%%  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+%%  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+%%  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+%%  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+%%  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+%%  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+%%  DEALINGS IN THE SOFTWARE.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% CPHOS 理论试题阅卷指南模板
+
+\documentclass{cphos}
+
+\cphostitle{第XX届 CPHOS 物理竞赛联考}
+\cphossubtitle{理论试题\ 阅卷指南}
+\cphoswatermark{../assets/watermark.jpg}
+
+% ============================================================
+% 阅卷指南环境定义
+% ============================================================
+
+% 题目计数器
+\newcounter{gdnum}
+
+% \gdproblem  —— 输出"第N题："左对齐粗体标题，自动递增计数（题间有间隔，标题与正文无间隔）
+\newcommand{\gdproblem}{%
+    \refstepcounter{gdnum}%
+    \ifnum\value{gdnum}>1\vspace{1em}\fi%  % 仅第二题起在前方加间隔
+    \par\noindent{\bfseries 第\ \arabic{gdnum}\ 题：}%
+}
+
+% ============================================================
+
+\begin{document}
+
+% === 标题页 ===
+\maketitlepage
+
+\begin{center}
+    {\kaiti\bfseries *本阅卷指南仅供教师批阅试卷参考}
+\end{center}
+
+% ============================================================
+% 第 1 题
+% ============================================================
+\gdproblem
+
+第（1）问，（4）式结果写对即可给（1）~（4）全部分数；（6）式结果写对即可给（5）（6）全部分数。（5）（6）两式可以不写出方向，即只写出电场和磁场强度的大小即可给分，其它情况按点给分。
+
+第（2）问，写出（8）式即可得到（7）（8）式全部分数，其它情况按点给分。
+
+第（3）问：（3.1）问，写出（10）式即可得到（9）（10）式全部分数，写出（13）式的数值结果即可得到（11）~（13）式全部分数，其它情况按点给分；（3.2）问，写出（17）式即可得到（15）~（17）式全部分数，其它情况按点给分；（3.3）问，写出类似"较大的功率容量"和"较小的损耗"的字眼即可得全分。
+
+注意本题不限制使用超纲的方法，此时应该按照上面所说的按小结果给分，小结果对了即给全分，其他情况严格按照式子给分。
+
+% ============================================================
+% 第 2 题
+% ============================================================
+\gdproblem
+
+（此处填写第2题阅卷指南内容。）
+
+\end{document}
