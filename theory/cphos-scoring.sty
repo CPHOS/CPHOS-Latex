@@ -143,6 +143,39 @@
 \seq_new:N \g__cphos_stack_hassub_seq
 \seq_new:N \g__cphos_warnings_seq
 
+\bool_new:N \g__cphos_has_flushed_multisol_bool
+\bool_gset_false:N \g__cphos_has_flushed_multisol_bool
+
+% 新增用于智能刷新的内部宏
+\cs_new:Npn \__cphos_smart_flush:n #1 {
+    \bool_set_false:N \l_tmpa_bool
+    \seq_if_empty:NF \l__cphos_score_values_seq { \bool_set_true:N \l_tmpa_bool }
+    \tl_if_empty:NF \l__cphos_text_items_tl { \bool_set_true:N \l_tmpa_bool }
+    \bool_if:NT \l_tmpa_bool {
+        \tl_put_right:Nn \l__cphos_output_tl { \par }
+        \tl_put_right:Nx \l__cphos_output_tl { #1 }
+        \__cphos_flush_items:
+        \__cphos_replace_last_comma:Nn \l__cphos_output_tl {；}
+    }
+}
+
+\cs_new:Npn \__cphos_smart_flush_level_end: {
+    \bool_set_false:N \l_tmpa_bool
+    \seq_if_empty:NF \l__cphos_score_values_seq { \bool_set_true:N \l_tmpa_bool }
+    \tl_if_empty:NF \l__cphos_text_items_tl { \bool_set_true:N \l_tmpa_bool }
+    \bool_if:NT \l_tmpa_bool {
+        \int_compare:nNnTF {\g__cphos_multisol_item_int} > {0} {
+            \tl_put_right:Nn \l__cphos_output_tl { \par }
+            \tl_put_right:Nx \l__cphos_output_tl { \g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}： }
+        }{
+            \bool_if:NT \g__cphos_has_flushed_multisol_bool {
+                \tl_put_right:Nn \l__cphos_output_tl {（共享）}
+            }
+        }
+        \__cphos_flush_items:
+    }
+}
+
 % multisol 跟踪变量
 \int_new:N \g__cphos_multisol_item_int       % 当前所在解法序号（0=不在 multisol 内）
 \int_new:N \g__cphos_multisol_item_score_int  % 当前解法已累计分值（用于各解法一致性验证）
@@ -238,7 +271,7 @@
 % 替换最后的逗号
 \cs_new:Npn \__cphos_replace_last_comma:Nn #1 #2 {
     \tl_if_empty:NF #1 {
-        \regex_replace_once:nnN {，\Z} {#2} #1
+        \regex_replace_once:nnN {[，；]\Z} {#2} #1
     }
 }
 
@@ -325,26 +358,30 @@
     \int_set:Nn \l__cphos_level_int {#1}
     \int_case:nnF {\l__cphos_level_int} {
         {0}{
-            \__cphos_flush_items:
+            \__cphos_smart_flush_level_end:
             \__cphos_replace_last_comma:Nn \l__cphos_output_tl {；}
+            \bool_gset_false:N \g__cphos_has_flushed_multisol_bool
             \__cphos_push_level:nnn {0}{#2}{#3}
             \tl_put_right:Nn \l__cphos_output_tl { \par Part~#2~#3分：}
         }
         {1}{
-            \__cphos_flush_items:
+            \__cphos_smart_flush_level_end:
             \__cphos_replace_last_comma:Nn \l__cphos_output_tl {；}
+            \bool_gset_false:N \g__cphos_has_flushed_multisol_bool
             \__cphos_push_level:nnn {1}{#2}{#3}
             \tl_put_right:Nn \l__cphos_output_tl { \par 第（#2）问#3分：}
         }
         {2}{
-            \__cphos_flush_items:
+            \__cphos_smart_flush_level_end:
             \__cphos_replace_last_comma:Nn \l__cphos_output_tl {；}
+            \bool_gset_false:N \g__cphos_has_flushed_multisol_bool
             \__cphos_push_level:nnn {2}{#2}{#3}
             \tl_put_right:Nn \l__cphos_output_tl { \par 第（#2）问#3分：}
         }
         {3}{
-            \__cphos_flush_items:
+            \__cphos_smart_flush_level_end:
             \__cphos_replace_last_comma:Nn \l__cphos_output_tl {；}
+            \bool_gset_false:N \g__cphos_has_flushed_multisol_bool
             \__cphos_push_level:nnn {3}{#2}{#3}
             \tl_put_right:Nn \l__cphos_output_tl { \par 第（#2）问#3分：}
         }
@@ -380,6 +417,8 @@
         {5}{
             % multisol 控制标记
             \str_if_eq:nnTF {#4} {msolstart} {
+                \__cphos_smart_flush:n {（共享）}
+                \bool_gset_true:N \g__cphos_has_flushed_multisol_bool
                 \int_gzero:N \g__cphos_multisol_item_int
                 \seq_gclear:N \g__cphos_multisol_item_scores_seq
                 \int_gzero:N \g__cphos_multisol_item_score_int
@@ -388,6 +427,7 @@
                 \str_if_eq:nnTF {#4} {msolitem} {
                     % 新解法开始：保存前一解法分值并重置
                     \int_compare:nNnT {\g__cphos_multisol_item_int} > {0} {
+                        \__cphos_smart_flush:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}：}
                         \seq_gput_right:Nx \g__cphos_multisol_item_scores_seq
                             {\int_use:N \g__cphos_multisol_item_score_int}
                         \int_gzero:N \g__cphos_multisol_item_score_int
@@ -395,6 +435,9 @@
                     \int_gincr:N \g__cphos_multisol_item_int
                 }{
                     % msolend：保存最后解法分值，验证一致性
+                    \int_compare:nNnT {\g__cphos_multisol_item_int} > {0} {
+                        \__cphos_smart_flush:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}：}
+                    }
                     \seq_gput_right:Nx \g__cphos_multisol_item_scores_seq
                         {\int_use:N \g__cphos_multisol_item_score_int}
                     \int_gzero:N \g__cphos_multisol_item_int
@@ -460,6 +503,7 @@
     \tl_clear:N \l__cphos_text_items_tl
     \seq_gclear:N \g__cphos_warnings_seq
     \int_gzero:N \g__cphos_actual_total_int
+    \bool_gset_false:N \g__cphos_has_flushed_multisol_bool
     % 清空 multisol 状态
     \int_gzero:N \g__cphos_multisol_item_int
     \seq_gclear:N \g__cphos_multisol_item_scores_seq
@@ -475,7 +519,7 @@
         \__cphos_process:nnnn ##1
     }
     
-    \__cphos_flush_items:
+    \__cphos_smart_flush_level_end:
     \__cphos_pop_all:
     \__cphos_replace_last_comma:Nn \l__cphos_output_tl {。}
     
