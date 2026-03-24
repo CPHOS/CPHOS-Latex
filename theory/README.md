@@ -331,7 +331,7 @@ theory/
 
 ```latex
 \begin{copyrightinfo}
-    \contactinfo{二维码1}{二维码2}{二维码3}{邮箱}{小程序名}
+    \contactinfo
 \end{copyrightinfo}
 ```
 

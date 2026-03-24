@@ -294,7 +294,7 @@ experiment/
 ```latex
 \begin{copyrightinfo}
   ...
-  \contactinfo{fig1}{fig2}{fig3}{service@cphos.cn}{CPHOS物理竞赛联考}
+  \contactinfo
 \end{copyrightinfo}
 ```
 

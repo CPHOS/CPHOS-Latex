@@ -612,21 +612,21 @@
 
 % === 联系方式（仅exam模式显示） ===
 \ifcphos@exam
-    \newcommand{\contactinfo}[5]{%
+    \newcommand{\contactinfo}{%
         \begin{center}
             {\bfseries 联系方式}
         \end{center}
         \vspace{0.5em}
         \noindent
         \begin{tabular}{@{}c@{\quad}c@{\quad}c@{\quad}p{4cm}@{}}
-            \includegraphics[width=2.9cm, align=c]{#1} &
-            \includegraphics[width=2.9cm, align=c]{#2} &
-            \includegraphics[width=2.9cm, align=c]{#3} &
+            \includegraphics[width=2.9cm, align=c]{../assets/fig1.jpg} &
+            \includegraphics[width=2.9cm, align=c]{../assets/fig2.png} &
+            \includegraphics[width=2.9cm, align=c]{../assets/fig3.png} &
             \begin{tabular}[c]{@{}c@{}}
                 {\small 邮箱} \\
-                {\small #4} \\
+                {\small \url{service@cphos.cn}} \\
                 {\small 微信小程序} \\
-                {\small #5}
+                {\small CPHOS物理竞赛联考}
             \end{tabular} \\[-0.3em]
 
             {\small 微信公众号} & {\small 官方网站} & {\small CPHOS论坛} & \\
@@ -634,7 +634,7 @@
         \end{tabular}
     }
 \else
-    \newcommand{\contactinfo}[5]{}
+    \newcommand{\contactinfo}{}
 \fi
 
 % =========================================================================
