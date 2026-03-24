@@ -159,18 +159,25 @@
     }
 }
 
+% 新增内联刷新宏（用于主解法无缝拼接）
+\cs_new:Npn \__cphos_inline_flush: {
+    \bool_set_false:N \l_tmpa_bool
+    \seq_if_empty:NF \l__cphos_score_values_seq { \bool_set_true:N \l_tmpa_bool }
+    \tl_if_empty:NF \l__cphos_text_items_tl { \bool_set_true:N \l_tmpa_bool }
+    \bool_if:NT \l_tmpa_bool {
+        \__cphos_flush_items:
+        \__cphos_replace_last_comma:Nn \l__cphos_output_tl {；}
+    }
+}
+
 \cs_new:Npn \__cphos_smart_flush_level_end: {
     \bool_set_false:N \l_tmpa_bool
     \seq_if_empty:NF \l__cphos_score_values_seq { \bool_set_true:N \l_tmpa_bool }
     \tl_if_empty:NF \l__cphos_text_items_tl { \bool_set_true:N \l_tmpa_bool }
     \bool_if:NT \l_tmpa_bool {
-        \int_compare:nNnTF {\g__cphos_multisol_item_int} > {0} {
+        \int_compare:nNnT {\g__cphos_multisol_item_int} > {1} {
             \tl_put_right:Nn \l__cphos_output_tl { \par }
             \tl_put_right:Nx \l__cphos_output_tl { \g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}： }
-        }{
-            \bool_if:NT \g__cphos_has_flushed_multisol_bool {
-                \tl_put_right:Nn \l__cphos_output_tl {（共享）}
-            }
         }
         \__cphos_flush_items:
     }
@@ -417,7 +424,6 @@
         {5}{
             % multisol 控制标记
             \str_if_eq:nnTF {#4} {msolstart} {
-                \__cphos_smart_flush:n {（共享）}
                 \bool_gset_true:N \g__cphos_has_flushed_multisol_bool
                 \int_gzero:N \g__cphos_multisol_item_int
                 \seq_gclear:N \g__cphos_multisol_item_scores_seq
@@ -427,7 +433,11 @@
                 \str_if_eq:nnTF {#4} {msolitem} {
                     % 新解法开始：保存前一解法分值并重置
                     \int_compare:nNnT {\g__cphos_multisol_item_int} > {0} {
-                        \__cphos_smart_flush:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}：}
+                        \int_compare:nNnTF {\g__cphos_multisol_item_int} = {1} {
+                            \__cphos_inline_flush:
+                        }{
+                            \__cphos_smart_flush:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}：}
+                        }
                         \seq_gput_right:Nx \g__cphos_multisol_item_scores_seq
                             {\int_use:N \g__cphos_multisol_item_score_int}
                         \int_gzero:N \g__cphos_multisol_item_score_int
@@ -436,7 +446,11 @@
                 }{
                     % msolend：保存最后解法分值，验证一致性
                     \int_compare:nNnT {\g__cphos_multisol_item_int} > {0} {
-                        \__cphos_smart_flush:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}：}
+                        \int_compare:nNnTF {\g__cphos_multisol_item_int} = {1} {
+                            \__cphos_inline_flush:
+                        }{
+                            \__cphos_smart_flush:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}：}
+                        }
                     }
                     \seq_gput_right:Nx \g__cphos_multisol_item_scores_seq
                         {\int_use:N \g__cphos_multisol_item_score_int}
@@ -579,5 +593,4 @@
 }
 
 \ExplSyntaxOff
-
 \endinput
