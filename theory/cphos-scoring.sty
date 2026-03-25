@@ -226,7 +226,10 @@
         \seq_gput_right:Nn \l__cphos_score_values_seq {#2}
     }
     % 累加到栈顶的实际分数
-    \seq_if_empty:NF \g__cphos_stack_actual_seq {
+    \seq_if_empty:NTF \g__cphos_stack_actual_seq {
+        % 栈空（无小问声明）：直接累加到总分
+        \int_gadd:Nn \g__cphos_actual_total_int {#2}
+    }{
         \seq_gpop_right:NN \g__cphos_stack_actual_seq \l__cphos_tmp_actual_tl
         \int_set:Nn \l__cphos_add_tmp_int { \l__cphos_tmp_actual_tl + #2 }
         \seq_gput_right:Nx \g__cphos_stack_actual_seq { \int_use:N \l__cphos_add_tmp_int }
@@ -419,7 +422,10 @@
                 \tl_put_right:Nn \l__cphos_text_items_tl {#2#3分，}
                 % 仅第一解法（或非 multisol）累计到主栈
                 \int_compare:nNnF {\g__cphos_multisol_item_int} > {1} {
-                    \seq_if_empty:NF \g__cphos_stack_actual_seq {
+                    \seq_if_empty:NTF \g__cphos_stack_actual_seq {
+                        % 栈空（无小问声明）：直接累加到总分
+                        \int_gadd:Nn \g__cphos_actual_total_int {#3}
+                    }{
                         \seq_gpop_right:NN \g__cphos_stack_actual_seq \l__cphos_tmp_actual_tl
                         \int_set:Nn \l__cphos_add_tmp_int { \l__cphos_tmp_actual_tl + #3 }
                         \seq_gput_right:Nx \g__cphos_stack_actual_seq { \int_use:N \l__cphos_add_tmp_int }
@@ -563,6 +569,14 @@
     \__cphos_smart_flush_level_end:
     \__cphos_pop_all:
     \__cphos_replace_last_comma:Nn \l__cphos_output_tl {。}
+    
+    % 如果没有任何层级声明（无小问），output_tl 开头需要加 \par 换行
+    % 同时直接从 output_tl 内容计算实际总分用于检查
+    \seq_if_empty:NT \g__cphos_stack_level_seq {
+        \tl_if_empty:NF \l__cphos_output_tl {
+            \tl_put_left:Nn \l__cphos_output_tl { \par }
+        }
+    }
     
     % 检查是否有有效的题目总分
     \tl_if_empty:NTF \g__cphos_problem_score_tl {
