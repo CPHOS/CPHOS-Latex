@@ -447,9 +447,9 @@
     \vspace{0.5em}
     \noindent
     \begin{tabular}{@{}c@{\quad}c@{\quad}c@{\quad}p{4cm}@{}}
-        \includegraphics[width=2.9cm, align=c]{../assets/fig1.jpg} &
-        \includegraphics[width=2.9cm, align=c]{../assets/fig2.png} &
-        \includegraphics[width=2.9cm, align=c]{../assets/fig3.png} &
+        \includegraphics[width=2.9cm, align=c]{assets/fig1.jpg} &
+        \includegraphics[width=2.9cm, align=c]{assets/fig2.png} &
+        \includegraphics[width=2.9cm, align=c]{assets/fig3.png} &
         \begin{tabular}[c]{@{}c@{}}
             {\small 邮箱} \\
             {\small \url{service@cphos.cn}} \\
