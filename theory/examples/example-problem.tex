@@ -72,7 +72,7 @@
 % 在解答中，使用\solsubq{编号}{分值}来同时输出小问编号并记录分值
 % 使用\eqtagscore{编号}{分数}来标记公式分值，使用\addtext{说明文字}{分数}来添加非公式分值
 \solsubq{1}{15}
-在解答部分，使用\texttt{\textbackslash solsubq\{编号\}\{分值\}}命令可以同时输出小问编号（如"（1）"）并自动记录该小问的分值。对于二级和三级小问，分别使用\texttt{\textbackslash solsubsubq}和\texttt{\textbackslash solsubsubsubq}。
+在解答部分，使用\texttt{\textbackslash solsubq\{编号\}\{分值\}}命令可以同时输出小问编号（如``（1）''）并自动记录该小问的分值。对于二级和三级小问，分别使用\texttt{\textbackslash solsubsubq}和\texttt{\textbackslash solsubsubsubq}。
 
 计分公式应单独占一行，使用\texttt{equation}环境输入，并在公式末尾使用\texttt{\textbackslash eqtagscore\{编号\}\{分数\}}标记分值，例如：
 \begin{equation}
@@ -108,6 +108,35 @@
     \label{fig:solution-example}
 \end{figure}
 
+{\sloppy
+使用\texttt{wrapfigure}环境可以实现文字环绕图片。编号格式与普通\texttt{figure}完全一致，题干
+\begin{wrapfigure}{r}{0.2\textwidth}
+    \vspace{-1em}
+    \includegraphics[width=\linewidth]{fig/example.jpg}
+    \caption{文字环绕示例图片}
+    \label{fig:wrap-example}
+    \vspace{-1em}
+\end{wrapfigure}
+中为``图~X.Y''、解答中为``答图~X.Y''，与普通图片共用计数器。由于环绕列宽度较窄，建议在\texttt{wrapfigure}所在段落前加\texttt{\textbackslash sloppy}并用大括号限定作用域，以避免两端对齐时文字被过度拉伸。\texttt{wrapfigure}适合单栏文档中图片较小、不需要独占整行的场合，可以节省版面。建议在\texttt{\textbackslash includegraphics}前后适当添加\texttt{\textbackslash vspace}负值来微调图片与文字的垂直间距。
+
+使用\texttt{subfigure}环境（由\texttt{subcaption}宏包提供）可以在一个\texttt{figure}中排列多个子图。子图编号会自动使用中文全角括号，如``（a）''``（b）''等，无需手动设置。整图用\texttt{\textbackslash ref\{fig:parent\}}引用，具体子图用\texttt{\textbackslash ref\{fig:parent\}\textbackslash ref\{fig:sub\}}引用，可得到``答图~X.Y（a）''格式。\par}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{fig/example.jpg}
+        \caption{子图一说明}
+        \label{fig:sub-a}
+    \end{subfigure}
+    \hspace{0.1\linewidth}
+    \begin{subfigure}[b]{0.3\linewidth}
+        \includegraphics[width=\linewidth]{fig/example.jpg}
+        \caption{子图二说明}
+        \label{fig:sub-b}
+    \end{subfigure}
+    \caption{包含子图的示例（答图~\ref{fig:subfig-demo}），可单独引用子图（答图~\ref{fig:sub-a}）}
+    \label{fig:subfig-demo}
+\end{figure}
+
 \solsubq{2}{25}
 \solsubsubq{2.1}{10}
 使用\texttt{\textbackslash solsubsubq\{编号\}\{分值\}}输出二级小问编号并记录分值。矢量统一使用上标箭头\texttt{\textbackslash vec\{\}}而不是加粗，方便观察；平均使用\texttt{\textbackslash bar\{\}}。角标不被包含在平均号和矢量箭头下面。
@@ -119,7 +148,7 @@
 \addtext{讨论}{4}
 
 \solsubsubq{2.2}{15}
-对于有多种解法的问题，可以使用\texttt{multisol}环境分别展示每种解法。使用\texttt{\textbackslash item}命令开启新解法，会自动生成"（解法一）""（解法二）"等标题。各解法内正常使用\texttt{\textbackslash eqtagscore}标记分值，建议对第二条及后续解法的公式编号加"\texttt{*}"后缀以示区分。第一条解法的分值正常累加，后续解法仅在评分标准中展示而不重复计分，各解法总分应相同。
+对于有多种解法的问题，可以使用\texttt{multisol}环境分别展示每种解法。使用\texttt{\textbackslash item}命令开启新解法，会自动生成``（解法一）''``（解法二）''等标题。各解法内正常使用\texttt{\textbackslash eqtagscore}标记分值，建议对第二条及后续解法的公式编号加``\texttt{*}''后缀以示区分。第一条解法的分值正常累加，后续解法仅在评分标准中展示而不重复计分，各解法总分应相同。
 
 \begin{multisol}
 \item

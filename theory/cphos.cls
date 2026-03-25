@@ -65,6 +65,8 @@
 \RequirePackage{xparse}            % 高级命令定义
 \RequirePackage{float}             % 图片位置控制
 \RequirePackage{caption}           % 图片标题自定义
+\RequirePackage{wrapfig}           % 文字环绕图片支持
+\RequirePackage{subcaption}        % 子图支持
 \RequirePackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=cyan]{hyperref}  % 超链接支持（仅URL为亮蓝色）
 \RequirePackage{upgreek}           % 直立希腊字母
 \RequirePackage{bm}                % 粗体数学符号
@@ -166,9 +168,23 @@
 \newif\ifcphos@insolution
 \cphos@insolutionfalse
 
-% 在figure环境开始时递增正确的计数器
+% 在figure/wrapfigure环境开始时递增正确的计数器
 \RequirePackage{etoolbox}
 \AtBeginEnvironment{figure}{%
+    \ifcphos@insolution
+        \refstepcounter{solutionfignum}%
+    \else
+        \refstepcounter{problemfignum}%
+    \fi
+}
+\AtBeginEnvironment{wrapfigure}{%
+    \ifcphos@insolution
+        \refstepcounter{solutionfignum}%
+    \else
+        \refstepcounter{problemfignum}%
+    \fi
+}
+\AtBeginEnvironment{wrapfigure*}{%
     \ifcphos@insolution
         \refstepcounter{solutionfignum}%
     \else
@@ -189,6 +205,10 @@
 \DeclareCaptionLabelFormat{problemfig}{图~#2}
 \DeclareCaptionLabelFormat{solutionfig}{答图~#2}
 \captionsetup[figure]{labelformat=problemfig}
+
+% 子图编号格式：中文全角括号（a）（b）等
+\renewcommand{\thesubfigure}{（\alph{subfigure}）}
+\captionsetup[subfigure]{labelformat=simple, labelsep=space, font=small}
 
 % 题号转中文
 \newcommand{\chnnum}[1]{%
