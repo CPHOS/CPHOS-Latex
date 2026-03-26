@@ -440,6 +440,11 @@
         }{%
             \cphosExpBeginAnsq{\Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}}{}%
         }%
+        \ifcphos@firstSubQ
+            \Alph{problemnum}.\cphos@currentPart%
+            \ifx\cphos@currentPartScore\@empty\else\newline\vspace{0.2em}\cphoshl{\textbf{\cphos@currentPartScore pt}}\fi%
+            \global\cphos@firstSubQfalse
+        \fi
         &
         \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
         \IfValueT{#1}{\newline\vspace{0.2em}\cphoshl{\textbf{#1pt}}}%
@@ -528,6 +533,11 @@
     % \anslastq[分数]{解答内容}{答题卡内容} - answersheet模式显示第3参数，但分数布局与answer一致
     \NewDocumentCommand{\anslastq}{o +m +g}{%
         \refstepcounter{ansSubQNum}%
+        \ifcphos@firstSubQ
+            \Alph{problemnum}.\cphos@currentPart%
+            \ifx\cphos@currentPartScore\@empty\else\newline\vspace{0.2em}\cphoshl{\textbf{\cphos@currentPartScore pt}}\fi%
+            \global\cphos@firstSubQfalse
+        \fi
         &
         \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
         \IfValueT{#1}{\newline\vspace{0.2em}\cphoshl{\textbf{#1pt}}}%
