@@ -87,6 +87,9 @@
 \captionsetup[table]{position=above, font=bf, labelfont=bf}  % 表格标题在上方，全粗体
 \RequirePackage{array}
 \RequirePackage{ltablex}  % 结合 longtable + tabularx：跨页 + 自动列宽
+\RequirePackage{wrapfig}           % 文字环绕图片支持
+\RequirePackage{subcaption}        % 子图支持
+\RequirePackage{etoolbox}          % 用于 AtBeginEnvironment
 \RequirePackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=cyan]{hyperref}
 \RequirePackage{upgreek}
 \RequirePackage{bm}
@@ -216,6 +219,57 @@
 \newcounter{expPart}[problemnum]
 \newcounter{expQ}[expPart]
 
+% === 图片/表格编号系统 ===
+% 题干图片计数器和解答图片计数器
+\newcounter{problemfignum}[problemnum]
+\newcounter{solutionfignum}[problemnum]
+\newif\ifcphos@insolution
+\cphos@insolutionfalse
+
+% 在 figure/wrapfigure 环境开始时递增正确的计数器
+\AtBeginEnvironment{figure}{%
+    \ifcphos@insolution
+        \refstepcounter{solutionfignum}%
+    \else
+        \refstepcounter{problemfignum}%
+    \fi
+}
+\AtBeginEnvironment{wrapfigure}{%
+    \ifcphos@insolution
+        \refstepcounter{solutionfignum}%
+    \else
+        \refstepcounter{problemfignum}%
+    \fi
+}
+\AtBeginEnvironment{wrapfigure*}{%
+    \ifcphos@insolution
+        \refstepcounter{solutionfignum}%
+    \else
+        \refstepcounter{problemfignum}%
+    \fi
+}
+
+% 重定义 figure 编号格式
+\renewcommand{\thefigure}{%
+    \ifcphos@insolution
+        \Alph{problemnum}.\arabic{solutionfignum}%
+    \else
+        \Alph{problemnum}.\arabic{problemfignum}%
+    \fi
+}
+
+% 重定义 table 编号格式（直接使用标准 table 计数器，加题号前缀）
+\renewcommand{\thetable}{\Alph{problemnum}.\arabic{table}}
+
+% 图片 caption 标签格式
+\DeclareCaptionLabelFormat{problemfig}{图~#2}
+\DeclareCaptionLabelFormat{solutionfig}{答图~#2}
+\captionsetup[figure]{labelformat=problemfig}
+
+% 子图编号格式：中文全角括号（a）（b）等
+\renewcommand{\thesubfigure}{（\alph{subfigure}）}
+\captionsetup[subfigure]{labelformat=simple, labelsep=space, font=small}
+
 % === 题号转中文 ===
 \newcommand{\chnnum}[1]{%
     \ifcase#1\or 一\or 二\or 三\or 四\or 五\or 六\or 七\or 八\or 九\or 十\fi
@@ -280,7 +334,7 @@
 % answer/answersheet模式下隐藏题干，exam模式下显示
 \ifcphos@exam
     \newenvironment{expcontent}{%
-        \setcounter{figure}{0}%  % 每个 expcontent 内图表从 1 开始计数
+        \setcounter{problemfignum}{0}%
         \setcounter{table}{0}%
         \setlength{\parindent}{2em}%
     }{%
@@ -394,6 +448,9 @@
 
     % expanswer环境
     \newenvironment{expanswer}{%
+        \cphos@insolutiontrue
+        \captionsetup[figure]{labelformat=solutionfig}%
+        \setcounter{solutionfignum}{0}%
         \setcounter{ansPartNum}{0}%
         \setcounter{ansSubQNum}{0}%
         \xdef\cphos@currentProblem{\Alph{problemnum}}%
@@ -415,6 +472,8 @@
     }{%
         \end{longtable}%
         \cphosExpCheckAndOutput%
+        \cphos@insolutionfalse
+        \captionsetup[figure]{labelformat=problemfig}%
         \par%
     }
 
@@ -477,6 +536,9 @@
 
     % expanswer环境 - answersheet版本
     \newenvironment{expanswer}{%
+        \cphos@insolutiontrue
+        \captionsetup[figure]{labelformat=solutionfig}%
+        \setcounter{solutionfignum}{0}%
         \setcounter{ansPartNum}{0}%
         \setcounter{ansSubQNum}{0}%
         \xdef\cphos@currentProblem{\Alph{problemnum}}%
@@ -496,6 +558,8 @@
         \endlastfoot
     }{%
         \end{longtable}%
+        \cphos@insolutionfalse
+        \captionsetup[figure]{labelformat=problemfig}%
         \par%
     }
 

@@ -25,7 +25,11 @@
     - [插入与第三栏同宽表格](#插入与第三栏同宽表格)
   - [页眉页脚与标题](#页眉页脚与标题)
   - [水印设置](#水印设置)
-  - [表格与图片建议](#表格与图片建议)
+  - [图片与表格](#图片与表格)
+    - [编号系统](#编号系统)
+    - [子图（subfigure）](#子图subfigure)
+    - [文字环绕图片（wrapfigure）](#文字环绕图片wrapfigure)
+    - [排版建议](#排版建议)
   - [联系方式与版权](#联系方式与版权)
   - [字体要求](#字体要求)
 
@@ -281,7 +285,70 @@ experiment/
 
 默认路径：`assets/watermark.jpg`。
 
-## 表格与图片建议
+## 图片与表格
+
+### 编号系统
+
+图片和表格自动按题号编号，格式为 `A.1`、`A.2`（题号.序号）。
+
+- **题干图片**（`expcontent` 内）：标签为「图 A.1」，每题从 1 重新计数
+- **解答图片**（`expanswer` 内）：标签为「答图 A.1」，每题从 1 重新计数
+- **表格**（所有环境）：标签为「表 A.1」，每题从 1 重新计数
+
+> [!NOTE]
+> 在 `expanswer` 环境（longtable 三栏结构）内无法使用浮动 `figure` 环境。如需在答案中插入图片，请使用 `minipage` + `\refstepcounter{solutionfignum}` 手动递增计数器：
+> ```latex
+> \begin{minipage}[c]{0.45\linewidth}
+>     \centering
+>     \refstepcounter{solutionfignum}%
+>     \includegraphics[width=0.95\linewidth]{figs/ansfig1.png}\par\vspace{0.3em}
+>     {\small 答图\thefigure：说明文字}
+> \end{minipage}
+> ```
+
+### 子图（subfigure）
+
+模板已加载 `subcaption` 包，支持子图编号（格式为中文全角括号）：
+
+```latex
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figs/fig1.jpg}
+        \caption{装置A}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figs/fig2.jpg}
+        \caption{装置B}
+    \end{subfigure}
+    \caption{实验装置对比}
+\end{figure}
+```
+
+子图编号输出为「（a）」「（b）」等。
+
+### 文字环绕图片（wrapfigure）
+
+模板已加载 `wrapfig` 包：
+
+```latex
+{\sloppy
+\begin{wrapfigure}{r}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.38\textwidth]{figs/fig1.jpg}
+    \caption{装置示意图}
+\end{wrapfigure}
+环绕文字内容...
+\par}
+```
+
+> [!TIP]
+> 建议用 `{\sloppy ... \par}` 包裹 `wrapfigure` 及其后的段落文字，防止窄栏内文字过度拉伸。
+
+### 排版建议
 
 - 跨页数据表：优先用 `tabularx`（模板已加载 `ltablex`）
 - 在答题卡第三栏内嵌内容时：优先用 `\linewidth`，避免 `\textwidth`
