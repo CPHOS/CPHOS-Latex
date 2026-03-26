@@ -224,6 +224,8 @@
 \newcounter{problemfignum}[problemnum]
 \newcounter{solutionfignum}[problemnum]
 \newif\ifcphos@insolution
+\newif\ifcphos@firstexpanswer
+\cphos@firstexpanswertrue
 \cphos@insolutionfalse
 
 % 在 figure/wrapfigure 环境开始时递增正确的计数器
@@ -455,10 +457,11 @@
         \setcounter{ansSubQNum}{0}%
         \xdef\cphos@currentProblem{\Alph{problemnum}}%
         \cphosExpClearState%
-        \par\vspace{0.3em}%
         \kaiti%
         \setlength{\LTleft}{0pt}%
         \setlength{\LTright}{0pt}%
+        \setlength{\LTpre}{0pt}%
+        \setlength{\LTpost}{0pt}%
         \setlength{\tabcolsep}{0pt}%
         \renewcommand{\arraystretch}{1.5}%
         \begin{longtable}{@{}|>{\centering\arraybackslash}m{\cphos@colA}|>{\centering\arraybackslash}m{\cphos@colB}|m{\cphos@colC}|@{}}
@@ -470,11 +473,10 @@
         \endfoot
         \endlastfoot
     }{%
-        \end{longtable}%
+        \end{longtable}\endgraf\nointerlineskip\kern-\arrayrulewidth%
         \cphosExpCheckAndOutput%
         \cphos@insolutionfalse
         \captionsetup[figure]{labelformat=problemfig}%
-        \par%
     }
 
 \else\ifcphos@answersheet
@@ -512,12 +514,12 @@
         \refstepcounter{ansSubQNum}%
         \ifcphos@firstSubQ
             \Alph{problemnum}.\cphos@currentPart%
-            \ifx\cphos@currentPartScore\@empty\else\newline\textbf{\cphos@currentPartScore pt}\fi%
+            \ifx\cphos@currentPartScore\@empty\else\newline\vspace{0.2em}\cphoshl{\textbf{\cphos@currentPartScore pt}}\fi%
             \global\cphos@firstSubQfalse
         \fi
         &
         \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
-        \IfValueT{#1}{\newline \textbf{#1pt}}%
+        \IfValueT{#1}{\newline\vspace{0.2em}\cphoshl{\textbf{#1pt}}}%
         &
         \IfValueTF{#3}{#3}{} \\
         \hhline{|~|-|-|}%
@@ -528,7 +530,7 @@
         \refstepcounter{ansSubQNum}%
         &
         \Alph{problemnum}.\cphos@currentPart.\arabic{ansSubQNum}%
-        \IfValueT{#1}{\newline \textbf{#1pt}}%
+        \IfValueT{#1}{\newline\vspace{0.2em}\cphoshl{\textbf{#1pt}}}%
         &
         \IfValueTF{#3}{#3}{} \\
         \hline%
@@ -542,10 +544,11 @@
         \setcounter{ansPartNum}{0}%
         \setcounter{ansSubQNum}{0}%
         \xdef\cphos@currentProblem{\Alph{problemnum}}%
-        \par\vspace{0.3em}%
         \kaiti%
         \setlength{\LTleft}{0pt}%
         \setlength{\LTright}{0pt}%
+        \setlength{\LTpre}{0pt}%
+        \setlength{\LTpost}{0pt}%
         \setlength{\tabcolsep}{0pt}%
         \renewcommand{\arraystretch}{1.5}%
         \begin{longtable}{@{}|>{\centering\arraybackslash}m{\cphos@colA}|>{\centering\arraybackslash}m{\cphos@colB}|m{\cphos@colC}|@{}}
@@ -557,10 +560,9 @@
         \endfoot
         \endlastfoot
     }{%
-        \end{longtable}%
+        \end{longtable}\endgraf\nointerlineskip\kern-\arrayrulewidth%
         \cphos@insolutionfalse
         \captionsetup[figure]{labelformat=problemfig}%
-        \par%
     }
 
 \else
