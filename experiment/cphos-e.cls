@@ -218,6 +218,8 @@
 % 固定三层编号: B. / 1. / B.1.1
 \newcounter{expPart}[problemnum]
 \newcounter{expQ}[expPart]
+\renewcommand{\theexpPart}{\Alph{problemnum}.\arabic{expPart}}
+\renewcommand{\theexpQ}{\Alph{problemnum}.\arabic{expPart}.\arabic{expQ}}
 
 % === 图片/表格编号系统 ===
 % 题干图片计数器和解答图片计数器

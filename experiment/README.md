@@ -159,6 +159,15 @@ experiment/
 说明：
 - 当前模板固定三层结构：`A.` / `1.` / `A.1.1`
 - 不支持 `\subsubq` 与 `\subsubsubq`，调用会报错
+- 编号命令支持 `\label`/`\ref` 交叉引用：
+  - `\pmark` 后 `\ref` 输出 `A.1` 格式（题号.部分号）
+  - `\subq` 后 `\ref` 输出 `A.1.1` 格式（完整题号）
+
+```latex
+\subq\label{q:measure} 测量某物理量...
+
+由\ref{q:measure}的结果可得...  % 输出"由A.1.1的结果可得..."
+```
 
 ### `examschedule` 环境（仅 exam 模式）
 

@@ -275,15 +275,19 @@
 
 % === 小问编号命令（题干用） ===
 \newcommand{\pmark}[1]{%
+    \protected@edef\@currentlabel{#1}%
     \noindent\textbf{Part~#1}%
 }
 \newcommand{\subq}[1]{%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 \newcommand{\subsubq}[1]{%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 \newcommand{\subsubsubq}[1]{%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 
@@ -292,18 +296,22 @@
 % \solsubq{1}{分值} -> （1）并记录\scorepart
 \newcommand{\solPart}[2]{%
     \scorePart{#1}{#2}%
+    \protected@edef\@currentlabel{#1}%
     \noindent\textbf{Part~#1}%
 }
 \newcommand{\solsubq}[2]{%
     \scorepart{#1}{#2}%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 \newcommand{\solsubsubq}[2]{%
     \scoresubpart{#1}{#2}%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 \newcommand{\solsubsubsubq}[2]{%
     \scoresubsubpart{#1}{#2}%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 
