@@ -72,7 +72,7 @@
 % 在解答中，使用\solsubq{编号}{分值}来同时输出小问编号并记录分值
 % 使用\eqtagscore{编号}{分数}来标记公式分值，使用\addtext{说明文字}{分数}来添加非公式分值
 \solsubq{1}{15}
-在解答部分，使用\texttt{\textbackslash solsubq\{编号\}\{分值\}}命令可以同时输出小问编号（如``（1）''）并自动记录该小问的分值。对于二级和三级小问，分别使用\texttt{\textbackslash solsubsubq}和\texttt{\textbackslash solsubsubsubq}。
+在解答部分，使用\texttt{\textbackslash solsubq\{编号\}\{分值\}}命令可以同时输出小问编号（如``（1）"）并自动记录该小问的分值，小问编号与解答内容之间不要分段。对于二级和三级小问，分别使用\texttt{\textbackslash solsubsubq}和\texttt{\textbackslash solsubsubsubq}。
 
 计分公式应单独占一行，使用\texttt{equation}环境输入，并在公式末尾使用\texttt{\textbackslash eqtagscore\{编号\}\{分数\}}标记分值，例如：
 \begin{equation}
@@ -139,7 +139,7 @@
 
 \solsubq{2}{25}
 \solsubsubq{2.1}{10}
-使用\texttt{\textbackslash solsubsubq\{编号\}\{分值\}}输出二级小问编号并记录分值。矢量统一使用上标箭头\texttt{\textbackslash vec\{\}}而不是加粗，方便观察；平均使用\texttt{\textbackslash bar\{\}}。角标不被包含在平均号和矢量箭头下面。
+使用\texttt{\textbackslash solsubsubq\{编号\}\{分值\}}输出二级小问编号并记录分值，多级小问编号写在同一行不要分段。矢量统一使用上标箭头\texttt{\textbackslash vec\{\}}而不是加粗，方便观察；平均使用\texttt{\textbackslash bar\{\}}。角标不被包含在平均号和矢量箭头下面。
 \begin{equation}
     \bar{s}_0 = \vec{v}_1 = a' \eqtagscore{6}{6} \label{eq:2.1.1}
 \end{equation}
