@@ -26,6 +26,8 @@
   - [页眉页脚设置](#页眉页脚设置)
     - [水印设置](#水印设置)
   - [图片编号系统](#图片编号系统)
+    - [文字环绕图片 `wrapfigure`](#文字环绕图片-wrapfigure)
+    - [子图 `subfigure`](#子图-subfigure)
   - [参考文献环境](#参考文献环境)
   - [附录环境](#附录环境)
   - [联系方式与版权](#联系方式与版权)
@@ -188,9 +190,21 @@ theory/
 | `\subsubq{i}` | （i） | 二级小问 |
 | `\subsubsubq{a}` | （a） | 三级小问 |
 
+所有小问编号命令均支持 `\label`/`\ref` 交叉引用，`\ref` 输出的内容与命令参数一致：
+
+```latex
+\subq{1}\label{q1} 求速度...
+
+\subq{2} 利用第（\ref{q1}）问的结果...  % 输出"利用第（1）问的结果..."
+
+\pmark{A}\label{partA}
+
+如 Part~\ref{partA} 所述...  % 输出"如 Part A 所述..."
+```
+
 ### 小问编号命令（解答用，自动记分）
 
-在解答中使用，自动调用对应的 `\scorepart` 等命令记录分值：
+在解答中使用，自动调用对应的 `\scorepart` 等命令记录分值。同样支持 `\label`/`\ref`：
 
 | 命令 | 用途 |
 |------|------|
@@ -305,6 +319,57 @@ theory/
 |------|----------|
 | `problemstatement` 内 | 图 X.Y |
 | `solution` 内 | 答图 X.Y |
+
+`figure`、`wrapfigure`、`subfigure` 三类环境共用同一套计数器，同一题目内编号连续递增，在新题目开始时自动归零。
+
+### 文字环绕图片 `wrapfigure`
+
+使用 `wrapfig` 宏包提供的 `wrapfigure` 环境：
+
+```latex
+{\sloppy  % 防止窄列文字被两端对齐过度拉伸
+\begin{wrapfigure}{r}{0.3\textwidth}  % r=右侧, l=左侧；第二参数为图片宽度
+    \vspace{-1em}
+    \includegraphics[width=\linewidth]{fig/example.jpg}
+    \caption{环绕示例}
+    \label{fig:wrap-example}
+    \vspace{-1em}
+\end{wrapfigure}
+环绕文字内容...\par}
+```
+
+> [!TIP]
+> `\sloppy` 外层的大括号将其作用域限制在当前段落，避免影响后续正文排版。建议在 `\includegraphics` 前后添加适量 `\vspace` 负值以微调图片与正文的垂直间距。
+
+### 子图 `subfigure`
+
+使用 `subcaption` 宏包提供的 `subfigure` 环境，子图编号自动使用中文全角括号格式"（a）""（b）"：
+
+```latex
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.45\linewidth}
+        \includegraphics[width=\linewidth]{fig/a.jpg}
+        \caption{子图说明}
+        \label{fig:sub-a}
+    \end{subfigure}\hfill
+    \begin{subfigure}[b]{0.45\linewidth}
+        \includegraphics[width=\linewidth]{fig/b.jpg}
+        \caption{子图说明}
+        \label{fig:sub-b}
+    \end{subfigure}
+    \caption{整体图说明}
+    \label{fig:main}
+\end{figure}
+```
+
+**引用方式：**
+
+| 引用写法 | 输出效果 |
+|------|----------|
+| `图\ref{fig:main}` | 图 X.Y |
+| `图\ref{fig:main}\ref{fig:sub-a}` | 图 X.Y（a） |
+| `\subref{fig:sub-a}` | （a） |
 
 ## 参考文献环境
 

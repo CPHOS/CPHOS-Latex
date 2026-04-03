@@ -65,6 +65,8 @@
 \RequirePackage{xparse}            % 高级命令定义
 \RequirePackage{float}             % 图片位置控制
 \RequirePackage{caption}           % 图片标题自定义
+\RequirePackage{wrapfig}           % 文字环绕图片支持
+\RequirePackage{subcaption}        % 子图支持
 \RequirePackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=cyan]{hyperref}  % 超链接支持（仅URL为亮蓝色）
 \RequirePackage{upgreek}           % 直立希腊字母
 \RequirePackage{bm}                % 粗体数学符号
@@ -166,9 +168,23 @@
 \newif\ifcphos@insolution
 \cphos@insolutionfalse
 
-% 在figure环境开始时递增正确的计数器
+% 在figure/wrapfigure环境开始时递增正确的计数器
 \RequirePackage{etoolbox}
 \AtBeginEnvironment{figure}{%
+    \ifcphos@insolution
+        \refstepcounter{solutionfignum}%
+    \else
+        \refstepcounter{problemfignum}%
+    \fi
+}
+\AtBeginEnvironment{wrapfigure}{%
+    \ifcphos@insolution
+        \refstepcounter{solutionfignum}%
+    \else
+        \refstepcounter{problemfignum}%
+    \fi
+}
+\AtBeginEnvironment{wrapfigure*}{%
     \ifcphos@insolution
         \refstepcounter{solutionfignum}%
     \else
@@ -189,6 +205,10 @@
 \DeclareCaptionLabelFormat{problemfig}{图~#2}
 \DeclareCaptionLabelFormat{solutionfig}{答图~#2}
 \captionsetup[figure]{labelformat=problemfig}
+
+% 子图编号格式：中文全角括号（a）（b）等
+\renewcommand{\thesubfigure}{（\alph{subfigure}）}
+\captionsetup[subfigure]{labelformat=simple, labelsep=space, font=small}
 
 % 题号转中文
 \newcommand{\chnnum}[1]{%
@@ -255,15 +275,19 @@
 
 % === 小问编号命令（题干用） ===
 \newcommand{\pmark}[1]{%
+    \protected@edef\@currentlabel{#1}%
     \noindent\textbf{Part~#1}%
 }
 \newcommand{\subq}[1]{%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 \newcommand{\subsubq}[1]{%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 \newcommand{\subsubsubq}[1]{%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 
@@ -272,18 +296,22 @@
 % \solsubq{1}{分值} -> （1）并记录\scorepart
 \newcommand{\solPart}[2]{%
     \scorePart{#1}{#2}%
+    \protected@edef\@currentlabel{#1}%
     \noindent\textbf{Part~#1}%
 }
 \newcommand{\solsubq}[2]{%
     \scorepart{#1}{#2}%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 \newcommand{\solsubsubq}[2]{%
     \scoresubpart{#1}{#2}%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 \newcommand{\solsubsubsubq}[2]{%
     \scoresubsubpart{#1}{#2}%
+    \protected@edef\@currentlabel{#1}%
     \noindent（#1）%
 }
 
@@ -427,9 +455,9 @@
     \vspace{0.5em}
     \noindent
     \begin{tabular}{@{}c@{\quad}c@{\quad}c@{\quad}p{4cm}@{}}
-        \includegraphics[width=2.9cm, align=c]{../assets/fig1.jpg} &
-        \includegraphics[width=2.9cm, align=c]{../assets/fig2.png} &
-        \includegraphics[width=2.9cm, align=c]{../assets/fig3.png} &
+        \includegraphics[width=2.9cm, align=c]{assets/fig1.jpg} &
+        \includegraphics[width=2.9cm, align=c]{assets/fig2.png} &
+        \includegraphics[width=2.9cm, align=c]{assets/fig3.png} &
         \begin{tabular}[c]{@{}c@{}}
             {\small 邮箱} \\
             {\small \url{service@cphos.cn}} \\
