@@ -219,7 +219,7 @@
 \cs_new:Npn \__cphos_add_eq:nn #1 #2 {
     \prop_if_in:NnTF \l__cphos_eq_by_score_prop {#2} {
         \prop_get:NnN \l__cphos_eq_by_score_prop {#2} \l__cphos_tmp_label_tl
-        \tl_put_right:Nn \l__cphos_tmp_label_tl {（#1）}
+        \tl_put_right:Nn \l__cphos_tmp_label_tl {\allowbreak（#1）}
         \prop_gput:NnV \l__cphos_eq_by_score_prop {#2} \l__cphos_tmp_label_tl
     }{
         \prop_gput:Nnn \l__cphos_eq_by_score_prop {#2} {（#1）}
@@ -240,7 +240,7 @@
 \cs_new:Npn \__cphos_add_eq_alt:nn #1 #2 {
     \prop_if_in:NnTF \l__cphos_eq_by_score_prop {#2} {
         \prop_get:NnN \l__cphos_eq_by_score_prop {#2} \l__cphos_tmp_label_tl
-        \tl_put_right:Nn \l__cphos_tmp_label_tl {（#1）}
+        \tl_put_right:Nn \l__cphos_tmp_label_tl {\allowbreak（#1）}
         \prop_gput:NnV \l__cphos_eq_by_score_prop {#2} \l__cphos_tmp_label_tl
     }{
         \prop_gput:Nnn \l__cphos_eq_by_score_prop {#2} {（#1）}
