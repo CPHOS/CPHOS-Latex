@@ -1,0 +1,160 @@
+% 测试：评分标准系统（含多解法、nomainsol、分值检查、自动换行）
+\documentclass[answer]{cphos}
+\cphostitle{评分标准测试}
+\setscorecheck{true}
+\begin{document}
+
+% === 测试1：基础评分标准 + 自动换行 ===
+\begin{problem}[30]{}
+
+\begin{problemstatement}
+\subq{1} 第一问
+
+\subq{2} 第二问
+\end{problemstatement}
+
+\begin{solution}
+\solsubq{1}{15}
+\begin{equation}
+    a = b \eqtagscore{1}{1}
+\end{equation}
+\begin{equation}
+    c = d \eqtagscore{2}{1}
+\end{equation}
+\begin{equation}
+    e = f \eqtagscore{3}{1}
+\end{equation}
+\begin{equation}
+    g = h \eqtagscore{4}{1}
+\end{equation}
+\begin{equation}
+    i = j \eqtagscore{5}{1}
+\end{equation}
+\begin{equation}
+    k = l \eqtagscore{6}{1}
+\end{equation}
+\begin{equation}
+    m = n \eqtagscore{7}{1}
+\end{equation}
+\begin{equation}
+    o = p \eqtagscore{8}{1}
+\end{equation}
+\begin{equation}
+    q = r \eqtagscore{9}{1}
+\end{equation}
+\begin{equation}
+    s = t \eqtagscore{10}{1}
+\end{equation}
+\begin{equation}
+    u = v \eqtagscore{11}{1}
+\end{equation}
+\begin{equation}
+    w = x \eqtagscore{12}{1}
+\end{equation}
+\begin{equation}
+    y = z \eqtagscore{13}{1}
+\end{equation}
+\begin{equation}
+    aa = bb \eqtagscore{14}{1}
+\end{equation}
+\begin{equation}
+    cc = dd \eqtagscore{15}{1}
+\end{equation}
+
+\solsubq{2}{15}
+\begin{equation}
+    A = B \eqtagscore{16}{3}
+\end{equation}
+\begin{equation}
+    C = D \eqtagscore{17}{3}
+\end{equation}
+\begin{equation}
+    E = F \eqtagscore{18}{3}
+\end{equation}
+\begin{equation}
+    G = H \eqtagscore{19}{3}
+\end{equation}
+\begin{equation}
+    I = J \eqtagscore{20}{3}
+\end{equation}
+\scoring
+\end{solution}
+\end{problem}
+
+% === 测试2：多解法（默认模式） ===
+\begin{problem}[20]{}
+
+\begin{problemstatement}
+\subq{1} 第一问
+\end{problemstatement}
+
+\begin{solution}
+\solsubq{1}{20}
+\begin{equation}
+    a = b \eqtagscore{1}{4}
+\end{equation}
+\begin{equation}
+    c = d \eqtagscore{2}{4}
+\end{equation}
+\begin{equation}
+    e = f \eqtagscore{5}{4}
+\end{equation}
+\begin{multisol}
+\item
+\begin{equation}
+    g = h \eqtagscore{3*}{4}
+\end{equation}
+\begin{equation}
+    i = j \eqtagscore{4*}{4}
+\end{equation}
+\item
+\begin{equation}
+    g' = h' \eqtagscore{3**}{4}
+\end{equation}
+\begin{equation}
+    i' = j' \eqtagscore{4**}{4}
+\end{equation}
+\end{multisol}
+\scoring
+\end{solution}
+\end{problem}
+
+% === 测试3：多解法（nomainsol 模式） ===
+\begin{problem}[20]{}
+
+\begin{problemstatement}
+\subq{1} 第一问
+\end{problemstatement}
+
+\begin{solution}
+\solsubq{1}{20}
+\begin{equation}
+    a = b \eqtagscore{1}{4}
+\end{equation}
+\begin{equation}
+    c = d \eqtagscore{2}{4}
+\end{equation}
+\begin{equation}
+    e = f \eqtagscore{5}{4}
+\end{equation}
+\begin{multisol}[nomainsol]
+\item
+\begin{equation}
+    g = h \eqtagscore{3*}{4}
+\end{equation}
+\begin{equation}
+    i = j \eqtagscore{4*}{4}
+\end{equation}
+\item
+\begin{equation}
+    g' = h' \eqtagscore{3**}{4}
+\end{equation}
+\begin{equation}
+    i' = j' \eqtagscore{4**}{4}
+\end{equation}
+\end{multisol}
+\scoring
+\end{solution}
+\end{problem}
+
+\end{document}

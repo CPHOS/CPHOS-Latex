@@ -322,16 +322,23 @@
 
 % === 多解法环境 ===
 % 用法：\begin{multisol}[前缀] \item 解法一正文 \item 解法二正文 \end{multisol}
+% 可选选项 [nomainsol]：评分标准中解法一也单独标注，不合并到主输出
 % 前缀默认"解法"，\item 自动生成标签"（解法一）""（解法二）"等
 % 评分标准中各解法式子自动合并展示，并在启用分值检查时验证各解法总分是否相等
 \newcounter{cphos@msolitem}
 \NewDocumentEnvironment{multisol}{O{解法}}{%
     \setcounter{cphos@msolitem}{0}%
-    \cphosmsolstart{#1}%
+    \ifstrequal{#1}{nomainsol}{%
+        \def\cphos@msol@prefix{解法}%
+        \cphosmsolstart{解法}{1}%
+    }{%
+        \def\cphos@msol@prefix{#1}%
+        \cphosmsolstart{#1}{0}%
+    }%
     \renewcommand{\item}{%
         \stepcounter{cphos@msolitem}%
         \cphosmsolitem%
-        \par\noindent（#1\chnnum{\value{cphos@msolitem}}）\enspace%
+        \par\noindent（\cphos@msol@prefix\chnnum{\value{cphos@msolitem}}）\enspace%
     }%
 }{%
     \cphosmsolend%

@@ -1,0 +1,37 @@
+% 测试：实验模板 label/ref 交叉引用
+\documentclass[answer]{cphos-e}
+\cphostitle{实验交叉引用测试}
+\cphossubtitle{实验试题}
+\begin{document}
+\setscorecheck{true}
+\maketitlepage
+
+\begin{problem}[30]{测试题}
+
+\begin{expcontent}
+\pmark[10]{理论分析}
+
+\subq\label{q:theory1} 推导公式。
+
+\subq\label{q:theory2} 利用\ref{q:theory1}的结果，计算某量。
+
+\pmark[20]{实验操作}\label{part:exp}
+
+\subq\label{q:exp1} 测量某物理量。
+
+\subq\label{q:exp2} 由\ref{q:exp1}和\ref{q:theory2}的结果，分析误差。
+\end{expcontent}
+
+\begin{expanswer}
+\anspart[10]
+\ansq[5]{推导过程...}{}
+\anslastq[5]{计算结果...}{}
+
+\anspart[20]
+\ansq[10]{测量数据...}{}
+\anslastq[10]{误差分析...}{}
+\end{expanswer}
+
+\end{problem}
+
+\end{document}

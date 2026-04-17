@@ -1,0 +1,54 @@
+% 测试：图片编号（wrapfig、subfigure、普通figure）
+\documentclass[answer]{cphos}
+\cphostitle{图片测试}
+\begin{document}
+
+\begin{problem}[10]{}
+
+\begin{problemstatement}
+\subq{1} 如图~\ref{fig:demo}所示。
+
+\begin{figure}[htbp]
+\centering
+\rule{3cm}{2cm}  % 占位图
+\caption{示意图}\label{fig:demo}
+\end{figure}
+
+\subq{2} 如图~\ref{fig:sub}所示。
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.45\textwidth}
+  \centering
+  \rule{2cm}{1.5cm}
+  \caption{子图一}\label{fig:suba}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.45\textwidth}
+  \centering
+  \rule{2cm}{1.5cm}
+  \caption{子图二}\label{fig:subb}
+\end{subfigure}
+\caption{子图组}\label{fig:sub}
+\end{figure}
+
+子图~\ref{fig:suba}和子图~\ref{fig:subb}。
+\end{problemstatement}
+
+\begin{solution}
+\solsubq{1}{5}
+答案1。
+\begin{equation}
+    a = b \eqtagscore{1}{5}
+\end{equation}
+
+\solsubq{2}{5}
+答案2。
+\begin{equation}
+    c = d \eqtagscore{2}{5}
+\end{equation}
+\scoring
+\end{solution}
+\end{problem}
+
+\end{document}

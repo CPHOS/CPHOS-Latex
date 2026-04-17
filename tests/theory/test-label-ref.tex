@@ -1,0 +1,57 @@
+% 测试：label/ref 交叉引用
+\documentclass[answer]{cphos}
+\cphostitle{交叉引用测试}
+\begin{document}
+
+\begin{problem}[20]{}
+
+\begin{problemstatement}
+\pmark{A}\label{partA}
+
+\subq{1}\label{q1} 求速度。
+
+\subq{2}\label{q2} 利用第（\ref{q1}）问的结果，求加速度。
+
+\subsubq{i}\label{qi} 子问题一
+
+\subsubq{ii}\label{qii} 利用（\ref{qi}）的结论。
+
+\pmark{B}\label{partB}
+
+\subq{1}\label{qB1} 如 Part~\ref{partA} 所述，结合第（\ref{q2}）问。
+\end{problemstatement}
+
+\begin{solution}
+\solPart{A}{10}\label{solA}
+
+\solsubq{1}{4}\label{sol1}
+\begin{equation}
+    v = at \eqtagscore{1}{2}
+\end{equation}
+\begin{equation}
+    s = \frac{1}{2}at^2 \eqtagscore{2}{2}
+\end{equation}
+
+\solsubq{2}{6}\label{sol2}
+由（\ref{sol1}）可知...
+
+参见 Part~\ref{solA}。
+
+\begin{equation}
+    a = \frac{v}{t} \eqtagscore{3}{3}
+\end{equation}
+\begin{equation}
+    F = ma \eqtagscore{4}{3}
+\end{equation}
+
+\solPart{B}{10}
+\solsubq{1}{10}
+\begin{equation}
+    E = mc^2 \eqtagscore{5}{10}
+\end{equation}
+
+\scoring
+\end{solution}
+\end{problem}
+
+\end{document}

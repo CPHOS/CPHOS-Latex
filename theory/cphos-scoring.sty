@@ -114,8 +114,9 @@
 }
 
 % multisol 环境控制命令（供 cphos.cls 中 multisol 环境调用）
-\NewDocumentCommand{\cphosmsolstart}{m}{
-    \__cphos_add:nnnn {5}{#1}{0}{msolstart}
+% #1=前缀, #2=nomainsol标志（0或1）
+\NewDocumentCommand{\cphosmsolstart}{m m}{
+    \__cphos_add:nnnn {5}{#1}{#2}{msolstart}
 }
 \NewDocumentCommand{\cphosmsolitem}{}{
     \__cphos_add:nnnn {5}{}{0}{msolitem}
@@ -203,6 +204,10 @@
 \seq_new:N \g__cphos_msol_saved_scores_seq    % 保存主解法缓冲区（scores seq）
 \tl_new:N  \g__cphos_msol_saved_text_tl       % 保存主解法缓冲区（text）
 \bool_new:N \l__cphos_multisol_ok_bool         % 验证用临时布尔值
+\bool_new:N \g__cphos_multisol_nomainsol_bool  % nomainsol 标志
+\prop_new:N \g__cphos_msol_common_prop         % nomainsol：保存公共缓冲区（prop）
+\seq_new:N \g__cphos_msol_common_scores_seq    % nomainsol：保存公共缓冲区（scores seq）
+\tl_new:N  \g__cphos_msol_common_text_tl       % nomainsol：保存公共缓冲区（text）
 
 % 专用临时变量
 \tl_new:N \l__cphos_tmp_level_tl
@@ -445,18 +450,35 @@
                 \int_gzero:N \g__cphos_multisol_item_score_int
                 \tl_gset:Nn \g__cphos_multisol_prefix_tl {#2}
                 \tl_gclear:N \g__cphos_msol_alt_tl
+                \int_compare:nNnTF {#3} = {1} {
+                    \bool_gset_true:N \g__cphos_multisol_nomainsol_bool
+                    % nomainsol：保存公共缓冲区，清空主缓冲区给解法一
+                    \prop_gset_eq:NN \g__cphos_msol_common_prop \l__cphos_eq_by_score_prop
+                    \seq_gset_eq:NN \g__cphos_msol_common_scores_seq \l__cphos_score_values_seq
+                    \tl_gset_eq:NN \g__cphos_msol_common_text_tl \l__cphos_text_items_tl
+                    \prop_gclear:N \l__cphos_eq_by_score_prop
+                    \seq_gclear:N \l__cphos_score_values_seq
+                    \tl_clear:N \l__cphos_text_items_tl
+                }{
+                    \bool_gset_false:N \g__cphos_multisol_nomainsol_bool
+                }
             }{
                 \str_if_eq:nnTF {#4} {msolitem} {
                     % 新解法开始：保存前一解法分值并重置
                     \int_compare:nNnT {\g__cphos_multisol_item_int} > {0} {
                         \int_compare:nNnTF {\g__cphos_multisol_item_int} = {1} {
-                            % 主解法→替代解法：保存主解法缓冲区，不 flush
-                            \prop_gset_eq:NN \g__cphos_msol_saved_prop \l__cphos_eq_by_score_prop
-                            \seq_gset_eq:NN \g__cphos_msol_saved_scores_seq \l__cphos_score_values_seq
-                            \tl_gset_eq:NN \g__cphos_msol_saved_text_tl \l__cphos_text_items_tl
-                            \prop_gclear:N \l__cphos_eq_by_score_prop
-                            \seq_gclear:N \l__cphos_score_values_seq
-                            \tl_clear:N \l__cphos_text_items_tl
+                            \bool_if:NTF \g__cphos_multisol_nomainsol_bool {
+                                % nomainsol：解法一也 flush 到 alt tl
+                                \__cphos_flush_to_alt:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{1}：}
+                            }{
+                                % 主解法→替代解法：保存主解法缓冲区，不 flush
+                                \prop_gset_eq:NN \g__cphos_msol_saved_prop \l__cphos_eq_by_score_prop
+                                \seq_gset_eq:NN \g__cphos_msol_saved_scores_seq \l__cphos_score_values_seq
+                                \tl_gset_eq:NN \g__cphos_msol_saved_text_tl \l__cphos_text_items_tl
+                                \prop_gclear:N \l__cphos_eq_by_score_prop
+                                \seq_gclear:N \l__cphos_score_values_seq
+                                \tl_clear:N \l__cphos_text_items_tl
+                            }
                         }{
                             % 替代解法→替代解法：flush 到 alt tl
                             \__cphos_flush_to_alt:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}：}
@@ -470,13 +492,28 @@
                     % msolend：保存最后解法分值，验证一致性
                     \int_compare:nNnT {\g__cphos_multisol_item_int} > {0} {
                         \int_compare:nNnTF {\g__cphos_multisol_item_int} = {1} {
-                            % 仅一条解法：缓冲区保持不变，post 公式自然合并
+                            \bool_if:NT \g__cphos_multisol_nomainsol_bool {
+                                % nomainsol 仅一条解法：flush 到 alt tl，恢复公共缓冲区
+                                \__cphos_flush_to_alt:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{1}：}
+                                \prop_gset_eq:NN \l__cphos_eq_by_score_prop \g__cphos_msol_common_prop
+                                \seq_gset_eq:NN \l__cphos_score_values_seq \g__cphos_msol_common_scores_seq
+                                \tl_gset_eq:NN \l__cphos_text_items_tl \g__cphos_msol_common_text_tl
+                            }
+                            % 非 nomainsol 仅一条解法：缓冲区保持不变，post 公式自然合并
                         }{
-                            % flush 最后一条替代解法到 alt tl，恢复主解法缓冲区
+                            % flush 最后一条替代解法到 alt tl
                             \__cphos_flush_to_alt:n {\g__cphos_multisol_prefix_tl\__cphos_chinese_num:n{\int_use:N \g__cphos_multisol_item_int}：}
-                            \prop_gset_eq:NN \l__cphos_eq_by_score_prop \g__cphos_msol_saved_prop
-                            \seq_gset_eq:NN \l__cphos_score_values_seq \g__cphos_msol_saved_scores_seq
-                            \tl_gset_eq:NN \l__cphos_text_items_tl \g__cphos_msol_saved_text_tl
+                            \bool_if:NTF \g__cphos_multisol_nomainsol_bool {
+                                % nomainsol：恢复公共缓冲区
+                                \prop_gset_eq:NN \l__cphos_eq_by_score_prop \g__cphos_msol_common_prop
+                                \seq_gset_eq:NN \l__cphos_score_values_seq \g__cphos_msol_common_scores_seq
+                                \tl_gset_eq:NN \l__cphos_text_items_tl \g__cphos_msol_common_text_tl
+                            }{
+                                % 恢复主解法缓冲区
+                                \prop_gset_eq:NN \l__cphos_eq_by_score_prop \g__cphos_msol_saved_prop
+                                \seq_gset_eq:NN \l__cphos_score_values_seq \g__cphos_msol_saved_scores_seq
+                                \tl_gset_eq:NN \l__cphos_text_items_tl \g__cphos_msol_saved_text_tl
+                            }
                             \prop_gclear:N \g__cphos_msol_saved_prop
                             \seq_gclear:N \g__cphos_msol_saved_scores_seq
                             \tl_gclear:N \g__cphos_msol_saved_text_tl
@@ -555,6 +592,10 @@
     \prop_gclear:N \g__cphos_msol_saved_prop
     \seq_gclear:N \g__cphos_msol_saved_scores_seq
     \tl_gclear:N \g__cphos_msol_saved_text_tl
+    \bool_gset_false:N \g__cphos_multisol_nomainsol_bool
+    \prop_gclear:N \g__cphos_msol_common_prop
+    \seq_gclear:N \g__cphos_msol_common_scores_seq
+    \tl_gclear:N \g__cphos_msol_common_text_tl
     % 清空栈
     \seq_gclear:N \g__cphos_stack_level_seq
     \seq_gclear:N \g__cphos_stack_label_seq

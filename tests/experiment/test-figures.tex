@@ -1,0 +1,66 @@
+% 测试：实验模板图片/表格编号、子图、wrapfigure
+\documentclass[answer]{cphos-e}
+\cphostitle{实验图表测试}
+\cphossubtitle{实验试题}
+\begin{document}
+\setscorecheck{true}
+\maketitlepage
+
+\begin{problem}[20]{图表测试}
+
+\begin{expcontent}
+\pmark[10]{图片测试}
+
+\subq\label{q:fig1} 如图~\ref{fig:demo}所示。
+
+\begin{figure}[htbp]
+\centering
+\rule{3cm}{2cm}
+\caption{示意图}\label{fig:demo}
+\end{figure}
+
+\subq 子图测试，见图~\ref{fig:sub}。
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.45\textwidth}
+  \centering
+  \rule{2cm}{1.5cm}
+  \caption{子图一}\label{fig:suba}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.45\textwidth}
+  \centering
+  \rule{2cm}{1.5cm}
+  \caption{子图二}\label{fig:subb}
+\end{subfigure}
+\caption{子图组}\label{fig:sub}
+\end{figure}
+
+\pmark[10]{表格测试}
+
+\subq 见表~\ref{tab:data}。
+
+\begin{table}[htbp]
+\centering
+\caption{数据表}\label{tab:data}
+\begin{tabular}{|c|c|}
+\hline
+A & B \\ \hline
+1 & 2 \\ \hline
+\end{tabular}
+\end{table}
+\end{expcontent}
+
+\begin{expanswer}
+\anspart[10]
+\ansq[5]{答案1}{}
+\anslastq[5]{答案2}{}
+
+\anspart[10]
+\anslastq[10]{答案3}{}
+\end{expanswer}
+
+\end{problem}
+
+\end{document}
